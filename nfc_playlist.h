@@ -28,6 +28,10 @@
 
 #include "scenes/nfc_playlist_scene.h"
 
+#define PLAYLIST_LOCATION "/ext/apps_data/nfc_playlist/"
+#define PLAYLIST_DIR "/ext/apps_data/nfc_playlist"
+#define PLAYLIST_NAME_LEN 100
+
 typedef enum {
    NfcPlaylistView_Submenu,
    NfcPlaylistView_Popup,
@@ -71,10 +75,6 @@ static const int options_emulate_delay[] = {0, 1, 2, 3, 4, 5, 6};
 static const int default_emulate_delay = 0;
 static const bool default_emulate_led_indicator = true;
 static const bool default_skip_error = false;
-
-#define PLAYLIST_LOCATION "/ext/apps_data/nfc_playlist/"
-#define PLAYLIST_DIR "/ext/apps_data/nfc_playlist"
-#define PLAYLIST_NAME_LEN 100
 
 typedef enum NfcPlaylistLedState {
    NfcPlaylistLedState_Normal,
