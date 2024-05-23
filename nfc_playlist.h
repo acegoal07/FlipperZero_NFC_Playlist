@@ -24,13 +24,13 @@
 #include <toolbox/stream/stream.h>
 #include <toolbox/stream/file_stream.h>
 
-#include "lib/worker/nfc_playlist_worker.h"
+#include "lib/emulation_worker/nfc_playlist_emulation_worker.h"
 
 #include "scenes/nfc_playlist_scene.h"
 
 #define PLAYLIST_LOCATION "/ext/apps_data/nfc_playlist/"
 #define PLAYLIST_DIR "/ext/apps_data/nfc_playlist"
-#define PLAYLIST_NAME_LEN 100
+#define PLAYLIST_NAME_LEN 50
 
 typedef enum {
    NfcPlaylistView_Submenu,
@@ -65,7 +65,7 @@ typedef struct {
    NotificationApp* notification;
    FuriThread* thread;
    FuriString* temp_furi_string;
-   NfcPlaylistWorker* nfc_playlist_worker;
+   NfcPlaylistEmulationWorker* nfc_playlist_emulation_worker;
    NfcPlaylistSettings settings;
 } NfcPlaylist;
 

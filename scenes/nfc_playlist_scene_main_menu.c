@@ -27,10 +27,9 @@ void nfc_playlist_main_menu_scene_on_enter(void* context) {
       return;
    }
 
-   FuriString* tmp_str = furi_string_alloc();
-   furi_string_printf(tmp_str, "NFC Playlist v%s", FAP_VERSION);
-   submenu_set_header(nfc_playlist->submenu, furi_string_get_cstr(tmp_str));
-   furi_string_free(tmp_str);
+   FuriString* header = furi_string_alloc_printf("NFC Playlist v%s", FAP_VERSION);
+   submenu_set_header(nfc_playlist->submenu, furi_string_get_cstr(header));
+   furi_string_free(header);
 
    submenu_add_lockable_item(
       nfc_playlist->submenu,

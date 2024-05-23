@@ -11,12 +11,13 @@ void nfc_playlist_playlist_rename_menu_callback(void* context) {
    furi_string_cat_str(new_file_path, ".txt");
    
    Storage* storage = furi_record_open(RECORD_STORAGE);
+
    if (!storage_file_exists(storage, furi_string_get_cstr(new_file_path))) {
       storage_common_rename(storage, old_file_path, furi_string_get_cstr(new_file_path));
       furi_string_swap(nfc_playlist->settings.playlist_path, new_file_path);
    }
-   furi_record_close(RECORD_STORAGE);
 
+   furi_record_close(RECORD_STORAGE);
    furi_string_free(new_file_path);
 
    scene_manager_search_and_switch_to_previous_scene(nfc_playlist->scene_manager, NfcPlaylistScene_MainMenu);
