@@ -17,17 +17,18 @@ void nfc_playlist_nfc_remove_options_change_callback(VariableItem* item) {
 
    uint8_t current_option = variable_item_list_get_selected_item_index(nfc_playlist->variable_item_list);
    uint8_t option_value_index = variable_item_get_current_value_index(item);
-   FuriString* tmp_str = furi_string_alloc();
+   
    switch(current_option) {
-      case NfcPlaylistSettings_LineSelector:
+      case NfcPlaylistSettings_LineSelector: {
          selected_line = option_value_index + 1;
-         furi_string_printf(tmp_str, "%d", selected_line);
+         FuriString* tmp_str = furi_string_alloc_printf("%d", selected_line);
          variable_item_set_current_value_text(item, furi_string_get_cstr(tmp_str));
+         furi_string_free(tmp_str);
          break;
+      }
       default:
          break;
    }
-   furi_string_free(tmp_str);
 }
 
 void nfc_playlist_nfc_remove_scene_on_enter(void* context) {

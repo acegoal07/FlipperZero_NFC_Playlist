@@ -64,7 +64,6 @@ typedef struct {
    char* text_input_output;
    NotificationApp* notification;
    FuriThread* thread;
-   FuriString* temp_furi_string;
    NfcPlaylistEmulationWorker* nfc_playlist_emulation_worker;
    NfcPlaylistSettings settings;
 } NfcPlaylist;
