@@ -23,6 +23,7 @@
 
 #include <toolbox/stream/stream.h>
 #include <toolbox/stream/file_stream.h>
+#include <toolbox/name_generator.h>
 
 #include "lib/emulation_worker/nfc_playlist_emulation_worker.h"
 
@@ -30,7 +31,7 @@
 
 #define PLAYLIST_LOCATION "/ext/apps_data/nfc_playlist/"
 #define PLAYLIST_DIR "/ext/apps_data/nfc_playlist"
-#define PLAYLIST_NAME_LEN 50
+#define MAX_PLAYLIST_NAME_LEN 50
 
 typedef enum {
    NfcPlaylistView_Submenu,

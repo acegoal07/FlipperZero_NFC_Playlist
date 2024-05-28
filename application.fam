@@ -12,7 +12,7 @@ App(
     fap_icon="assets/icon.png",
     fap_private_libs=[
         Lib(
-            name="worker",
+            name="emulation_worker",
         ),
     ],
 )
