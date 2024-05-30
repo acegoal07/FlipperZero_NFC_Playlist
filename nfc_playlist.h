@@ -23,7 +23,7 @@
 
 #include <toolbox/stream/stream.h>
 #include <toolbox/stream/file_stream.h>
-#include <toolbox/name_generator.h>
+#include <toolbox/path.h>
 
 #include "lib/emulation_worker/nfc_playlist_emulation_worker.h"
 

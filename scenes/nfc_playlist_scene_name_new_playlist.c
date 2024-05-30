@@ -26,10 +26,10 @@ void nfc_playlist_name_new_playlist_menu_callback(void* context) {
 void nfc_playlist_name_new_playlist_scene_on_enter(void* context) {
    NfcPlaylist* nfc_playlist = context;
 
-   name_generator_make_auto(nfc_playlist->text_input_output, MAX_PLAYLIST_NAME_LEN, "playlist-");
+   nfc_playlist->text_input_output = malloc(MAX_PLAYLIST_NAME_LEN + 1);
    text_input_set_header_text(nfc_playlist->text_input, "Enter file name");
    text_input_set_minimum_length(nfc_playlist->text_input, 1);
-   text_input_set_result_callback(nfc_playlist->text_input, nfc_playlist_name_new_playlist_menu_callback, nfc_playlist, nfc_playlist->text_input_output, MAX_PLAYLIST_NAME_LEN, true);
+   text_input_set_result_callback(nfc_playlist->text_input, nfc_playlist_name_new_playlist_menu_callback, nfc_playlist, nfc_playlist->text_input_output, MAX_PLAYLIST_NAME_LEN, false);
 
    view_dispatcher_switch_to_view(nfc_playlist->view_dispatcher, NfcPlaylistView_TextInput);
 }

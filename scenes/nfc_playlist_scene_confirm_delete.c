@@ -10,15 +10,16 @@ void nfc_playlist_confirm_delete_menu_callback(GuiButtonType result, InputType t
 void nfc_playlist_confirm_delete_scene_on_enter(void* context) {
    NfcPlaylist* nfc_playlist = context;
 
-   char const* file_path = furi_string_get_cstr(nfc_playlist->settings.playlist_path);
-   FuriString* temp_str = furi_string_alloc_printf("\e#Delete %s?\e#", strchr(file_path, '/') != NULL ? &strrchr(file_path, '/')[1] : file_path);
-   furi_string_replace(temp_str, ".txt", "");
+   FuriString* file_name = furi_string_alloc();
+   path_extract_filename_no_ext(furi_string_get_cstr(nfc_playlist->settings.playlist_path), file_name);
+   FuriString* temp_str = furi_string_alloc_printf("\e#Delete %s?\e#", furi_string_get_cstr(file_name));
 
    widget_add_text_box_element(nfc_playlist->widget, 0, 0, 128, 23, AlignCenter, AlignCenter, furi_string_get_cstr(temp_str), false);
    widget_add_button_element(nfc_playlist->widget, GuiButtonTypeLeft, "Cancel", nfc_playlist_confirm_delete_menu_callback, nfc_playlist);
    widget_add_button_element(nfc_playlist->widget, GuiButtonTypeRight, "Delete", nfc_playlist_confirm_delete_menu_callback, nfc_playlist);
 
    furi_string_free(temp_str);
+   furi_string_free(file_name);
 
    view_dispatcher_switch_to_view(nfc_playlist->view_dispatcher, NfcPlaylistView_Widget);
 }
