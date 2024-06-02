@@ -1,19 +1,18 @@
 #include "../nfc_playlist.h"
 
-int32_t nfc_playlist_playlist_rename_task(void* context) {
+int32_t nfc_playlist_playlist_rename_thread_task(void* context) {
    NfcPlaylist* nfc_playlist = context;
 
    char const* old_file_path = furi_string_get_cstr(nfc_playlist->settings.playlist_path);
-
-   FuriString* new_file_path = furi_string_alloc();
-   path_extract_dirname(old_file_path, new_file_path);
-   furi_string_cat_printf(new_file_path, "/%s.txt", nfc_playlist->text_input_output);
-   char const* new_file_path_cstr = furi_string_get_cstr(new_file_path);
-
+   char const* old_file_name = strchr(old_file_path, '/') != NULL ? &strrchr(old_file_path, '/')[1] : old_file_path;
+   FuriString* new_file_path = furi_string_alloc_set_str(old_file_path);
+   furi_string_replace(new_file_path, old_file_name, nfc_playlist->text_input_output);
+   furi_string_cat_str(new_file_path, ".txt");
+   
    Storage* storage = furi_record_open(RECORD_STORAGE);
 
-   if (!storage_file_exists(storage, new_file_path_cstr)) {
-      if (storage_common_rename(storage, old_file_path, new_file_path_cstr)) {
+   if (!storage_file_exists(storage, furi_string_get_cstr(new_file_path))) {
+      if (storage_common_rename(storage, old_file_path, furi_string_get_cstr(new_file_path)) == 0) {
          furi_string_move(nfc_playlist->settings.playlist_path, new_file_path);
       }
    }
@@ -23,42 +22,34 @@ int32_t nfc_playlist_playlist_rename_task(void* context) {
    return 0;
 }
 
-void nfc_playlist_playlist_rename_free(NfcPlaylist* nfc_playlist) {
-   furi_assert(nfc_playlist);
-   furi_thread_free(nfc_playlist->thread);
-}
-
-void nfc_playlist_playlist_rename_stop(NfcPlaylist* nfc_playlist) {
-   furi_assert(nfc_playlist);
-   furi_thread_join(nfc_playlist->thread);
-}
-
 void nfc_playlist_playlist_rename_thread_state_callback(FuriThreadState state, void* context) {
-   if (state == FuriThreadStateStopped) {
-      NfcPlaylist* nfc_playlist = context;
-      scene_manager_handle_custom_event(nfc_playlist->scene_manager, 0);
+   NfcPlaylist* nfc_playlist = context;
+   UNUSED(nfc_playlist);
+   if(state == FuriThreadStateStopped) {
+      furi_thread_yield();
+      scene_manager_search_and_switch_to_previous_scene(nfc_playlist->scene_manager, NfcPlaylistScene_MainMenu);
    }
 }
 
 void nfc_playlist_playlist_rename_menu_callback(void* context) {
    NfcPlaylist* nfc_playlist = context;
-   nfc_playlist->thread = furi_thread_alloc_ex("NfcPlaylistRenamer", 8192, nfc_playlist_playlist_rename_task, nfc_playlist);
-   // DISABLED FOR NOW due to it causing a crash once finished renaming the file not triggering the scene switch nto sure why but looking into it
-   // once fixed this will also be applied to new playlist creation to fix similar view port issues
-   // furi_thread_set_state_context(nfc_playlist->thread, nfc_playlist);
-   // furi_thread_set_state_callback(nfc_playlist->thread, nfc_playlist_playlist_rename_thread_state_callback);
+   nfc_playlist->thread = furi_thread_alloc_ex("NfcPlaylistRenamer", 8192, nfc_playlist_playlist_rename_thread_task, nfc_playlist);
+   furi_thread_set_state_context(nfc_playlist->thread, nfc_playlist);
+   furi_thread_set_state_callback(nfc_playlist->thread, nfc_playlist_playlist_rename_thread_state_callback);
    furi_thread_start(nfc_playlist->thread);
 }
 
 void nfc_playlist_playlist_rename_scene_on_enter(void* context) {
    NfcPlaylist* nfc_playlist = context;
 
-   FuriString* tmp_str = furi_string_alloc();
-   path_extract_filename(nfc_playlist->settings.playlist_path, tmp_str, true);
+   char const* tmp_file_path = furi_string_get_cstr(nfc_playlist->settings.playlist_path);
+   char const* tmp_file_name = strchr(tmp_file_path, '/') != NULL ? &strrchr(tmp_file_path, '/')[1] : tmp_file_path;
+   FuriString* tmp_file_name_furi = furi_string_alloc_set_str(tmp_file_name);
+   furi_string_replace(tmp_file_name_furi, ".txt", "");
 
    nfc_playlist->text_input_output = malloc(MAX_PLAYLIST_NAME_LEN + 1);
-   strcpy(nfc_playlist->text_input_output, furi_string_get_cstr(tmp_str));
-   furi_string_free(tmp_str);
+   strcpy(nfc_playlist->text_input_output, furi_string_get_cstr(tmp_file_name_furi));
+   furi_string_free(tmp_file_name_furi);
 
    text_input_set_header_text(nfc_playlist->text_input, "Enter new file name");
    text_input_set_minimum_length(nfc_playlist->text_input, 1);
@@ -68,13 +59,8 @@ void nfc_playlist_playlist_rename_scene_on_enter(void* context) {
 }
 
 bool nfc_playlist_playlist_rename_scene_on_event(void* context, SceneManagerEvent event) {
-   NfcPlaylist* nfc_playlist = context;
-   if(event.type == SceneManagerEventTypeCustom && event.event == 0) {
-      nfc_playlist_playlist_rename_stop(nfc_playlist);
-      nfc_playlist_playlist_rename_free(nfc_playlist);
-      scene_manager_search_and_switch_to_previous_scene(nfc_playlist->scene_manager, NfcPlaylistScene_MainMenu);
-      return true;
-   }
+   UNUSED(context);
+   UNUSED(event);
    return false;
 }
 
