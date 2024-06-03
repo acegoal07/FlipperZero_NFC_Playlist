@@ -2,7 +2,7 @@
 
 NfcPlaylistEmulationWorker* nfc_playlist_emulation_worker_alloc() {
    NfcPlaylistEmulationWorker* nfc_playlist_emulation_worker = malloc(sizeof(NfcPlaylistEmulationWorker));
-   nfc_playlist_emulation_worker->thread = furi_thread_alloc_ex("NfcPlaylistEmulationWorker", 8192, nfc_playlist_emulation_worker_task, nfc_playlist_emulation_worker);
+   nfc_playlist_emulation_worker->thread = furi_thread_alloc_ex("NfcPlaylistEmulationWorker", 4096, nfc_playlist_emulation_worker_task, nfc_playlist_emulation_worker);
    nfc_playlist_emulation_worker->state = NfcPlaylistEmulationWorkerState_Stopped;
    nfc_playlist_emulation_worker->nfc = nfc_alloc();
    nfc_playlist_emulation_worker->nfc_device = nfc_device_alloc();

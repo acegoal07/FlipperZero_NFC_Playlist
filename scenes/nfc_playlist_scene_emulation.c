@@ -134,7 +134,7 @@ int32_t nfc_playlist_emulation_task(void* context) {
 
 void nfc_playlist_emulation_setup(void* context) {
    NfcPlaylist* nfc_playlist = context;
-   nfc_playlist->thread = furi_thread_alloc_ex("NfcPlaylistEmulationWorker", 8192, nfc_playlist_emulation_task, nfc_playlist);
+   nfc_playlist->thread = furi_thread_alloc_ex("NfcPlaylistEmulationWorker", 4096, nfc_playlist_emulation_task, nfc_playlist);
    nfc_playlist->nfc_playlist_emulation_worker = nfc_playlist_emulation_worker_alloc();
 }
 

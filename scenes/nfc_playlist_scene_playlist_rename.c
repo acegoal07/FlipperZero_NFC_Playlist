@@ -24,16 +24,16 @@ int32_t nfc_playlist_playlist_rename_thread_task(void* context) {
 
 void nfc_playlist_playlist_rename_thread_state_callback(FuriThreadState state, void* context) {
    NfcPlaylist* nfc_playlist = context;
-   UNUSED(nfc_playlist);
    if(state == FuriThreadStateStopped) {
       furi_thread_yield();
+      nfc_playlist->thread = NULL;
       scene_manager_search_and_switch_to_previous_scene(nfc_playlist->scene_manager, NfcPlaylistScene_MainMenu);
    }
 }
 
 void nfc_playlist_playlist_rename_menu_callback(void* context) {
    NfcPlaylist* nfc_playlist = context;
-   nfc_playlist->thread = furi_thread_alloc_ex("NfcPlaylistRenamer", 8192, nfc_playlist_playlist_rename_thread_task, nfc_playlist);
+   nfc_playlist->thread = furi_thread_alloc_ex("NfcPlaylistRenamer", 1024, nfc_playlist_playlist_rename_thread_task, nfc_playlist);
    furi_thread_set_state_context(nfc_playlist->thread, nfc_playlist);
    furi_thread_set_state_callback(nfc_playlist->thread, nfc_playlist_playlist_rename_thread_state_callback);
    furi_thread_start(nfc_playlist->thread);
