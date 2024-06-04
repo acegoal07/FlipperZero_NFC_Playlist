@@ -29,8 +29,5 @@ As i know these firmwares are supported and working if you know any more please 
 - Add NFC Item (Adds the selected nfc item to the currently selected playlist)
 - Remove NFC Item (Opens a menu allowing you to select a line to remove from the playlist)
 - View playlist content (Allows you to view the contents of the playlist)
-## Known issues
-### Renaming/creating playlist
-I know of an issue with these functions that can cause them to lock the viewport if you put in a name that is very long im looking into fixing this and finding a solution
 
 Any feedback is welcome and would be very much appreciated
