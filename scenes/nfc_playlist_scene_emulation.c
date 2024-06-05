@@ -20,7 +20,9 @@ int32_t nfc_playlist_emulation_task(void* context) {
 
    view_dispatcher_switch_to_view(nfc_playlist->view_dispatcher, NfcPlaylistView_Popup);
 
-   if (file_stream_open(stream, furi_string_get_cstr(nfc_playlist->settings.playlist_path), FSAM_READ, FSOM_OPEN_EXISTING)) {
+   if (nfc_playlist->settings.playlist_length == 0) {
+      popup_set_header(nfc_playlist->popup, "The playlist you have\nselected is empty", 64, 10, AlignCenter, AlignTop);
+   } else if (file_stream_open(stream, furi_string_get_cstr(nfc_playlist->settings.playlist_path), FSAM_READ, FSOM_OPEN_EXISTING)) {
       EmulationState = NfcPlaylistEmulationState_Emulating;
       int file_position = 0;
 
@@ -105,29 +107,26 @@ int32_t nfc_playlist_emulation_task(void* context) {
             nfc_playlist_emulation_worker_clear_nfc_data(nfc_playlist->nfc_playlist_emulation_worker);
          }
       }
-      popup_reset(nfc_playlist->popup);
-      if (nfc_playlist->settings.playlist_length == 0) {
-         popup_set_header(nfc_playlist->popup, "Empty playlist", 64, 10, AlignCenter, AlignTop);
-      } else {
-         popup_set_header(nfc_playlist->popup, EmulationState == NfcPlaylistEmulationState_Canceled ? "Emulation stopped" : "Emulation finished", 64, 10, AlignCenter, AlignTop);
-      }
-      popup_set_text(nfc_playlist->popup, "Press back", 64, 50, AlignCenter, AlignTop);
       stop_blink(nfc_playlist);
 
-      EmulationState = NfcPlaylistEmulationState_Stopped;
       furi_string_free(line);
       furi_string_free(tmp_header_str);
       furi_string_free(tmp_counter_str);
       furi_string_free(tmp_file_name);
       furi_string_free(tmp_file_ext);
+      file_stream_close(stream);
+
+      popup_reset(nfc_playlist->popup);
+      popup_set_header(nfc_playlist->popup, EmulationState == NfcPlaylistEmulationState_Canceled ? "Emulation stopped" : "Emulation finished", 64, 10, AlignCenter, AlignTop);
    } else {
       popup_set_header(nfc_playlist->popup, "Failed to open playlist", 64, 10, AlignCenter, AlignTop);
-      popup_set_text(nfc_playlist->popup, "Press back", 64, 50, AlignCenter, AlignTop);
    }
+   popup_set_text(nfc_playlist->popup, "Press back", 64, 50, AlignCenter, AlignTop);
 
-   file_stream_close(stream);
    furi_record_close(RECORD_STORAGE);
    stream_free(stream);
+
+   EmulationState = NfcPlaylistEmulationState_Stopped;
 
    return 0;
 }
