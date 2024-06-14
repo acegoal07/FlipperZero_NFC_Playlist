@@ -57,7 +57,7 @@ int32_t nfc_playlist_emulation_task(void* context) {
             } else if(!delay_active) {
                delay_active = true;
             } else if(skip_delay) {
-               skip_delay = false
+               skip_delay = false;
             }
          }
 
