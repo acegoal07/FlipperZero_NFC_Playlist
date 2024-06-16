@@ -17,7 +17,7 @@ void nfc_playlist_playlist_select_menu_callback(void* context) {
       furi_string_free(line);
       file_stream_close(stream);
    }
-   
+
    stream_free(stream);
    furi_record_close(RECORD_STORAGE);
 
@@ -32,7 +32,7 @@ void nfc_playlist_playlist_select_scene_on_enter(void* context) {
       PLAYLIST_LOCATION,
       true,
       true,
-      &I_unknown_10px,
+      &I_Playlist_10px,
       true);
    file_browser_set_callback(nfc_playlist->file_browser, nfc_playlist_playlist_select_menu_callback, nfc_playlist);
    FuriString* tmp_str = furi_string_alloc_set_str(PLAYLIST_LOCATION);
