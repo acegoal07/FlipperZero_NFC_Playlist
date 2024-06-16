@@ -67,7 +67,7 @@ int32_t nfc_playlist_emulation_task(void* context) {
 
          int time_counter_ms = (options_emulate_timeout[nfc_playlist->settings.emulate_timeout]*1000);
 
-         if(!furi_string_cmpi_str(tmp_file_ext, ".nfc")) {
+         if(!strcasestr(furi_string_get_cstr(tmp_file_ext), ".nfc")) {
             if(nfc_playlist->settings.skip_error) {
                skip_delay = true;
                continue;
