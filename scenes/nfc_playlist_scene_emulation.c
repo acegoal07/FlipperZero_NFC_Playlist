@@ -50,7 +50,6 @@ int32_t nfc_playlist_emulation_task(void* context) {
                while(time_counter_delay_ms > 0 && EmulationState == NfcPlaylistEmulationState_Emulating) {
                   furi_string_printf(tmp_counter_str,  "%ds", (time_counter_delay_ms/1000));
                   popup_set_text(nfc_playlist->popup, furi_string_get_cstr(tmp_counter_str), 64, 50, AlignCenter, AlignTop);
-                  furi_string_reset(tmp_counter_str);
                   furi_delay_ms(50);
                   time_counter_delay_ms -= 50;
                };
@@ -68,7 +67,7 @@ int32_t nfc_playlist_emulation_task(void* context) {
 
          int time_counter_ms = (options_emulate_timeout[nfc_playlist->settings.emulate_timeout]*1000);
 
-         if(!furi_string_cmpi_str(tmp_file_ext, "nfc")) {
+         if(!furi_string_cmpi_str(tmp_file_ext, ".nfc")) {
             if(nfc_playlist->settings.skip_error) {
                skip_delay = true;
                continue;
