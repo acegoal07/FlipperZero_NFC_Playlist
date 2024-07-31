@@ -13,7 +13,6 @@ An example file can be found in the repository
 This app was design, built and tested using the <a href="https://github.com/Next-Flip/Momentum-Firmware">Momentum</a> so keep that in mind when building the FAP for yourself
 ## Supported Firmwares
 As i know these firmwares are supported and working if you know any more please let me know
-- <a href="https://github.com/Flipper-XFW/Xtreme-Firmware">Xtreme</a>
 - <a href="https://github.com/Next-Flip/Momentum-Firmware">Momentum</a>
 - <a href="https://github.com/RogueMaster/flipperzero-firmware-wPlugins">RogueMaster</a>
 ## Settings:
