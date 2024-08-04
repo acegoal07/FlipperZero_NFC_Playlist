@@ -36,9 +36,9 @@ int32_t nfc_playlist_emulation_task(void* context) {
 
       while(stream_read_line(stream, line) && EmulationState == NfcPlaylistEmulationState_Emulating) {
 
-         char* file_path = (char*)furi_string_get_cstr(line);
+         furi_string_trim(line);
 
-         if (strspn(file_path, " \t\n\r") == strlen(file_path)) {
+         if(furi_string_empty(line)) {
             continue;
          }
 
@@ -62,13 +62,13 @@ int32_t nfc_playlist_emulation_task(void* context) {
 
          if(EmulationState != NfcPlaylistEmulationState_Emulating) {break;}
 
+         char* file_path = (char*)furi_string_get_cstr(line);
          path_extract_filename(line, tmp_file_name, false);
          path_extract_ext_str(line, tmp_file_ext);
 
          int time_counter_ms = (options_emulate_timeout[nfc_playlist->settings.emulate_timeout]*1000);
 
-         int ext_check = furi_string_cmpi_str(tmp_file_ext, ".nfc");
-         if(ext_check != 0 && ext_check != 10) {
+         if(furi_string_cmpi_str(tmp_file_ext, ".nfc") != 0) {
             if(nfc_playlist->settings.skip_error) {
                skip_delay = true;
                continue;
