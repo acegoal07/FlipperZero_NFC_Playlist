@@ -31,4 +31,5 @@ As i know these firmwares are supported and working if you know any more please 
 ## Feature ideas:
 - A function to allow you to add multiple nfc items to a playlist at once
 - A view playlist function which only shows the name of the playlist items excluding the file path
+
 Any feedback is welcome and would be very much appreciated
