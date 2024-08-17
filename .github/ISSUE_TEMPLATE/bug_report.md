@@ -10,11 +10,11 @@ assignees: acegoal07
 **Describe the bug**
 A clear and concise description of what the bug is.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Copy of your playlist**
+[Copy and paste the content of your playlist.txt file this is useful to help find any issues caused by the reading of the playlist]
 
-**Desktop (please complete the following information):**
- - Firmware [e.g. Xtreme]
+**Fap information:**
+ - Firmware [e.g. Momentum]
  - Version [e.g. 1.1]
 
 **Additional context**

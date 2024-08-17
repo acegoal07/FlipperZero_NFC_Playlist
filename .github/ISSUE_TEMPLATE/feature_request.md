@@ -8,4 +8,4 @@ assignees: acegoal07
 ---
 
 **Describe the feature**
-A indepth description of what you want
+A in depth description of what you want
