@@ -1,1 +1,7 @@
-notes.txt
+dist/*
+.vscode
+.clang-format
+.clangd
+.editorconfig
+.env
+.ufbt
