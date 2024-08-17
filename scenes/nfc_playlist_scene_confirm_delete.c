@@ -39,8 +39,11 @@ bool nfc_playlist_confirm_delete_scene_on_event(void* context, SceneManagerEvent
             scene_manager_search_and_switch_to_previous_scene(nfc_playlist->scene_manager, NfcPlaylistScene_MainMenu);
             consumed = true;
             break;
-         default:
+         case GuiButtonTypeLeft:
             scene_manager_previous_scene(nfc_playlist->scene_manager);
+            consumed = true;
+            break;
+         default:
             break;
       }
    }

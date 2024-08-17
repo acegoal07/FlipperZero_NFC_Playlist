@@ -39,13 +39,13 @@ void nfc_playlist_nfc_add_scene_on_enter(void* context) {
    file_browser_configure(
       nfc_playlist->file_browser,
       ".nfc",
-      "/ext/nfc/",
+      NFC_ITEM_LOCATION,
       true,
       true,
       &I_Nfc_10px,
       true);
    file_browser_set_callback(nfc_playlist->file_browser, nfc_playlist_nfc_add_menu_callback, nfc_playlist);
-   FuriString* tmp_str = furi_string_alloc_set_str("/ext/nfc/");
+   FuriString* tmp_str = furi_string_alloc_set_str(NFC_ITEM_LOCATION);
    file_browser_start(nfc_playlist->file_browser, tmp_str);
    furi_string_free(tmp_str);
 

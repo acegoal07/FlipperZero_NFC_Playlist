@@ -31,6 +31,7 @@
 
 #define PLAYLIST_LOCATION "/ext/apps_data/nfc_playlist/"
 #define PLAYLIST_DIR "/ext/apps_data/nfc_playlist"
+#define NFC_ITEM_LOCATION "/ext/nfc/"
 #define MAX_PLAYLIST_NAME_LEN 50
 
 typedef enum {
