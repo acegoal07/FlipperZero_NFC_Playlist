@@ -32,7 +32,6 @@ bool nfc_playlist_confirm_delete_scene_on_event(void* context, SceneManagerEvent
          case GuiButtonTypeRight:
             Storage* storage = furi_record_open(RECORD_STORAGE);
             if (storage_simply_remove(storage, furi_string_get_cstr(nfc_playlist->settings.playlist_path))) {
-               nfc_playlist->settings.playlist_selected = false;
                furi_string_reset(nfc_playlist->settings.playlist_path);               
             }
             furi_record_close(RECORD_STORAGE);

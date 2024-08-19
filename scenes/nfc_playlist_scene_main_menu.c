@@ -14,11 +14,6 @@ void nfc_playlist_main_menu_menu_callback(void* context, uint32_t index) {
 
 void nfc_playlist_main_menu_scene_on_enter(void* context) {
    NfcPlaylist* nfc_playlist = context;
-   if (!nfc_playlist->settings.playlist_selected) {
-      nfc_playlist->settings.playlist_selected = true;
-      scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_PlaylistSelect);
-      return;
-   }
 
    FuriString* header = furi_string_alloc_printf("NFC Playlist v%s", FAP_VERSION);
    submenu_set_header(nfc_playlist->submenu, furi_string_get_cstr(header));
