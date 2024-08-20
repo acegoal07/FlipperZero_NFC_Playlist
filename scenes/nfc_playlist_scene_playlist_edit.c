@@ -6,6 +6,7 @@ typedef enum {
    NfcPlaylistFileEdit_RenamePlaylist,
    NfcPlaylistFileEdit_AddNfcItem,
    NfcPlaylistFileEdit_RemoveNfcItem,
+   NfcPlaylistFileEdit_MoveNfcItem,
    NfcPlaylistFileEdit_ViewPlaylistContent
 } NfcPlaylistFileEditMenuSelection;
 
@@ -66,6 +67,15 @@ void nfc_playlist_playlist_edit_scene_on_enter(void* context) {
 
    submenu_add_lockable_item(
       nfc_playlist->submenu,
+      "Move NFC Item",
+      NfcPlaylistFileEdit_MoveNfcItem,
+      nfc_playlist_playlist_edit_menu_callback,
+      nfc_playlist,
+      playlist_path_empty,
+      "No\nplaylist\nselected");
+
+   submenu_add_lockable_item(
+      nfc_playlist->submenu,
       "View Playlist Content",
       NfcPlaylistFileEdit_ViewPlaylistContent,
       nfc_playlist_playlist_edit_menu_callback,
@@ -99,6 +109,10 @@ bool nfc_playlist_playlist_edit_scene_on_event(void* context, SceneManagerEvent 
             break;
          case NfcPlaylistFileEdit_RemoveNfcItem:
             scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_NfcRemove);
+            consumed = true;
+            break;
+         case NfcPlaylistFileEdit_MoveNfcItem:
+            scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_NfcMoveItem);
             consumed = true;
             break;
          case NfcPlaylistFileEdit_ViewPlaylistContent:

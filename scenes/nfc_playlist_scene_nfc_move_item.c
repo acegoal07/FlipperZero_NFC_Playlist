@@ -1,6 +1,3 @@
-// This is currently not working so its not included at the moment
-
-
 #include "../nfc_playlist.h"
 
 typedef enum {
@@ -48,8 +45,8 @@ void nfc_playlist_nfc_move_item_options_change_callback(VariableItem* item) {
 void nfc_playlist_nfc_move_item_scene_on_enter(void* context) {
    NfcPlaylist* nfc_playlist = context;
 
-   selected_target = 0;
-   selected_destination = 0;
+   selected_target = 1;
+   selected_destination = 1;
 
    variable_item_list_set_header(nfc_playlist->variable_item_list, "Move NFC Item");
 
@@ -83,8 +80,6 @@ void nfc_playlist_nfc_move_item_scene_on_enter(void* context) {
 
 bool nfc_playlist_nfc_move_item_scene_on_event(void* context, SceneManagerEvent event) {
    NfcPlaylist* nfc_playlist = context;
-   UNUSED(nfc_playlist);
-
    bool consumed = false;
 
    if(event.type == SceneManagerEventTypeCustom) {
@@ -94,49 +89,50 @@ bool nfc_playlist_nfc_move_item_scene_on_event(void* context, SceneManagerEvent 
             Stream* stream = file_stream_alloc(storage);
 
             if(file_stream_open(stream, furi_string_get_cstr(nfc_playlist->settings.playlist_path), FSAM_READ_WRITE, FSOM_OPEN_EXISTING)) {
-               int counter = 0;
-               FuriString* tmp_target_line = furi_string_alloc();
+               FuriString* tmp_target_str = furi_string_alloc();
                FuriString* line = furi_string_alloc();
+               uint8_t counter = 0;
 
                while(stream_read_line(stream, line)) {
                   counter++;
-                  if (counter == selected_target) {
-                     furi_string_set(tmp_target_line, line);
+                  if(counter == selected_target) {
+                     furi_string_trim(line);
+                     furi_string_cat_printf(tmp_target_str, "%s", furi_string_get_cstr(line));
+                     furi_string_reset(line);
+                     stream_rewind(stream);
+                     counter = 0;
+                     break;
                   }
                }
-               furi_string_reset(line);
-               stream_rewind(stream);
 
-               counter = 0;
-               FuriString* tmp_new_playlist_order = furi_string_alloc();
+               FuriString* tmp_new_order_str = furi_string_alloc();
 
                while(stream_read_line(stream, line)) {
                   counter++;
-
                   if(counter == selected_target) {
                      continue;
                   }
-
                   furi_string_trim(line);
-
-                  if(!furi_string_empty(tmp_new_playlist_order)) {
-                     furi_string_cat_printf(tmp_new_playlist_order, "\n");
+                  if(!furi_string_empty(tmp_new_order_str)) {
+                     furi_string_cat_printf(tmp_new_order_str, "%s", "\n");
                   }
-                  if(counter == selected_destination) {
-                     furi_string_cat_printf(tmp_new_playlist_order, "%s\n%s", furi_string_get_cstr(tmp_target_line), furi_string_get_cstr(line));
+                  if(counter == selected_destination && counter == nfc_playlist->settings.playlist_length) {
+                     furi_string_cat_printf(tmp_new_order_str, "%s\n%s", furi_string_get_cstr(line), furi_string_get_cstr(tmp_target_str));
+                     furi_string_free(tmp_target_str);
                   } else {
-                     furi_string_cat_printf(tmp_new_playlist_order, "%s", furi_string_get_cstr(line));
+                     if(counter == selected_destination) {
+                        furi_string_cat_printf(tmp_new_order_str, "%s\n", furi_string_get_cstr(tmp_target_str));
+                        furi_string_reset(tmp_target_str);
+                     }
+                     furi_string_cat_printf(tmp_new_order_str, "%s", furi_string_get_cstr(line));
                   }
                }
 
-               FURI_LOG_RAW_I("New playlist order: %s\n", furi_string_get_cstr(tmp_new_playlist_order));
-
-               stream_clean(stream);
-               stream_write_string(stream, tmp_new_playlist_order);
-               file_stream_close(stream);
-               furi_string_free(tmp_new_playlist_order);
-               furi_string_free(tmp_target_line);
                furi_string_free(line);
+               stream_clean(stream);
+               stream_write_string(stream, tmp_new_order_str);
+               furi_string_free(tmp_new_order_str);
+               file_stream_close(stream);
             }
 
             stream_free(stream);

@@ -27,6 +27,7 @@ As i know these firmwares are supported and working if you know any more please 
 - Rename playlist (Renames the selected playlist to the new name provided)
 - Add NFC Item (Adds the selected nfc item to the currently selected playlist)
 - Remove NFC Item (Opens a menu allowing you to select a line to remove from the playlist)
+- Move NFC Item (Allows you to change the order of the NFC items in the playlist)
 - View playlist content (Allows you to view the contents of the playlist)
 ## Feature ideas:
 - A function to allow you to add multiple nfc items to a playlist at once
