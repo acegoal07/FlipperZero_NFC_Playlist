@@ -15,10 +15,9 @@ void nfc_playlist_nfc_add_menu_callback(void* context) {
       furi_string_free(line);
 
       if (!furi_string_empty(tmp_str)) {
-         furi_string_cat_printf(tmp_str, "\n%s", furi_string_get_cstr(nfc_playlist->file_browser_output));
-      } else {
-         furi_string_printf(tmp_str, "%s", furi_string_get_cstr(nfc_playlist->file_browser_output));
+         furi_string_cat_printf(tmp_str, "\n");
       }
+      furi_string_cat_printf(tmp_str, "%s", furi_string_get_cstr(nfc_playlist->file_browser_output));
 
       stream_clean(stream);
       stream_write_string(stream, tmp_str);

@@ -77,11 +77,10 @@ bool nfc_playlist_nfc_remove_scene_on_event(void* context, SceneManagerEvent eve
                   current_line++;
                   if (current_line != selected_line) {
                      furi_string_trim(line);
-                     if (furi_string_empty(tmp_str)) {
-                        furi_string_cat_printf(tmp_str, "%s", furi_string_get_cstr(line));
-                     } else {
-                        furi_string_cat_printf(tmp_str, "\n%s", furi_string_get_cstr(line));
+                     if (!furi_string_empty(tmp_str)) {
+                        furi_string_cat_printf(tmp_str, "\n");
                      }
+                     furi_string_cat_printf(tmp_str, "%s", furi_string_get_cstr(line));
                   }
                }
 
