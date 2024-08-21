@@ -117,7 +117,7 @@ bool nfc_playlist_nfc_move_item_scene_on_event(void* context, SceneManagerEvent 
                   if(!furi_string_empty(tmp_new_order_str)) {
                      furi_string_cat_printf(tmp_new_order_str, "%s", "\n");
                   }
-                  
+
                   furi_string_trim(line);
 
                   if(counter == selected_destination) {
