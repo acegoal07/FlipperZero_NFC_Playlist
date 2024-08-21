@@ -109,21 +109,26 @@ bool nfc_playlist_nfc_move_item_scene_on_event(void* context, SceneManagerEvent 
 
                while(stream_read_line(stream, line)) {
                   counter++;
+
                   if(counter == selected_target) {
                      continue;
                   }
-                  furi_string_trim(line);
+
                   if(!furi_string_empty(tmp_new_order_str)) {
                      furi_string_cat_printf(tmp_new_order_str, "%s", "\n");
                   }
-                  if(counter == selected_destination && counter == nfc_playlist->settings.playlist_length) {
-                     furi_string_cat_printf(tmp_new_order_str, "%s\n%s", furi_string_get_cstr(line), furi_string_get_cstr(tmp_target_str));
-                     furi_string_free(tmp_target_str);
-                  } else {
-                     if(counter == selected_destination) {
-                        furi_string_cat_printf(tmp_new_order_str, "%s\n", furi_string_get_cstr(tmp_target_str));
+                  
+                  furi_string_trim(line);
+
+                  if(counter == selected_destination) {
+                     if(counter == 1) {
+                        furi_string_cat_printf(tmp_new_order_str, "%s\n%s", furi_string_get_cstr(tmp_target_str), furi_string_get_cstr(line));
+                        furi_string_reset(tmp_target_str);
+                     } else {
+                        furi_string_cat_printf(tmp_new_order_str, "%s\n%s", furi_string_get_cstr(line), furi_string_get_cstr(tmp_target_str));
                         furi_string_reset(tmp_target_str);
                      }
+                  } else {
                      furi_string_cat_printf(tmp_new_order_str, "%s", furi_string_get_cstr(line));
                   }
                }
