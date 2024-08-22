@@ -1,14 +1,14 @@
 #include "../nfc_playlist.h"
 
 typedef enum {
-   NfcPlaylistFileEdit_CreatePlaylist,
-   NfcPlaylistFileEdit_DeletePlaylist,
-   NfcPlaylistFileEdit_RenamePlaylist,
-   NfcPlaylistFileEdit_AddNfcItem,
-   NfcPlaylistFileEdit_RemoveNfcItem,
-   NfcPlaylistFileEdit_MoveNfcItem,
-   NfcPlaylistFileEdit_ViewPlaylistContent
-} NfcPlaylistFileEditMenuSelection;
+   NfcPlaylistPlaylistEdit_CreatePlaylist,
+   NfcPlaylistPlaylistEdit_DeletePlaylist,
+   NfcPlaylistPlaylistEdit_RenamePlaylist,
+   NfcPlaylistPlaylistEdit_AddNfcItem,
+   NfcPlaylistPlaylistEdit_RemoveNfcItem,
+   NfcPlaylistPlaylistEdit_MoveNfcItem,
+   NfcPlaylistPlaylistEdit_ViewPlaylistContent
+} NfcPlaylistPlaylistEditMenuSelection;
 
 void nfc_playlist_playlist_edit_menu_callback(void* context, uint32_t index) {
    NfcPlaylist* nfc_playlist = context;
@@ -25,14 +25,14 @@ void nfc_playlist_playlist_edit_scene_on_enter(void* context) {
    submenu_add_item(
       nfc_playlist->submenu,
       "Create Playlist",
-      NfcPlaylistFileEdit_CreatePlaylist,
+      NfcPlaylistPlaylistEdit_CreatePlaylist,
       nfc_playlist_playlist_edit_menu_callback,
       nfc_playlist);
 
    submenu_add_lockable_item(
       nfc_playlist->submenu,
       "Delete Playlist",
-      NfcPlaylistFileEdit_DeletePlaylist,
+      NfcPlaylistPlaylistEdit_DeletePlaylist,
       nfc_playlist_playlist_edit_menu_callback,
       nfc_playlist,
       playlist_path_empty,
@@ -41,7 +41,7 @@ void nfc_playlist_playlist_edit_scene_on_enter(void* context) {
    submenu_add_lockable_item(
       nfc_playlist->submenu,
       "Rename Playlist",
-      NfcPlaylistFileEdit_RenamePlaylist,
+      NfcPlaylistPlaylistEdit_RenamePlaylist,
       nfc_playlist_playlist_edit_menu_callback,
       nfc_playlist,
       playlist_path_empty,
@@ -50,7 +50,7 @@ void nfc_playlist_playlist_edit_scene_on_enter(void* context) {
    submenu_add_lockable_item(
       nfc_playlist->submenu,
       "Add NFC Item",
-      NfcPlaylistFileEdit_AddNfcItem,
+      NfcPlaylistPlaylistEdit_AddNfcItem,
       nfc_playlist_playlist_edit_menu_callback,
       nfc_playlist,
       playlist_path_empty,
@@ -59,7 +59,7 @@ void nfc_playlist_playlist_edit_scene_on_enter(void* context) {
    submenu_add_lockable_item(
       nfc_playlist->submenu,
       "Remove NFC Item",
-      NfcPlaylistFileEdit_RemoveNfcItem,
+      NfcPlaylistPlaylistEdit_RemoveNfcItem,
       nfc_playlist_playlist_edit_menu_callback,
       nfc_playlist,
       playlist_path_empty,
@@ -68,7 +68,7 @@ void nfc_playlist_playlist_edit_scene_on_enter(void* context) {
    submenu_add_lockable_item(
       nfc_playlist->submenu,
       "Move NFC Item",
-      NfcPlaylistFileEdit_MoveNfcItem,
+      NfcPlaylistPlaylistEdit_MoveNfcItem,
       nfc_playlist_playlist_edit_menu_callback,
       nfc_playlist,
       playlist_path_empty,
@@ -77,7 +77,7 @@ void nfc_playlist_playlist_edit_scene_on_enter(void* context) {
    submenu_add_lockable_item(
       nfc_playlist->submenu,
       "View Playlist Content",
-      NfcPlaylistFileEdit_ViewPlaylistContent,
+      NfcPlaylistPlaylistEdit_ViewPlaylistContent,
       nfc_playlist_playlist_edit_menu_callback,
       nfc_playlist,
       playlist_path_empty,
@@ -91,31 +91,31 @@ bool nfc_playlist_playlist_edit_scene_on_event(void* context, SceneManagerEvent 
    bool consumed = false;
    if(event.type == SceneManagerEventTypeCustom) {
       switch(event.event) {
-         case NfcPlaylistFileEdit_CreatePlaylist:
+         case NfcPlaylistPlaylistEdit_CreatePlaylist:
             scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_NameNewPlaylist);
             consumed = true;
             break;
-         case NfcPlaylistFileEdit_DeletePlaylist:
+         case NfcPlaylistPlaylistEdit_DeletePlaylist:
             scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_ConfirmDelete);
             consumed = true;
             break;
-         case NfcPlaylistFileEdit_RenamePlaylist:
+         case NfcPlaylistPlaylistEdit_RenamePlaylist:
             scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_PlaylistRename);
             consumed = true;
             break;
-         case NfcPlaylistFileEdit_AddNfcItem:
+         case NfcPlaylistPlaylistEdit_AddNfcItem:
             scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_NfcAdd);
             consumed = true;
             break;
-         case NfcPlaylistFileEdit_RemoveNfcItem:
+         case NfcPlaylistPlaylistEdit_RemoveNfcItem:
             scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_NfcRemove);
             consumed = true;
             break;
-         case NfcPlaylistFileEdit_MoveNfcItem:
+         case NfcPlaylistPlaylistEdit_MoveNfcItem:
             scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_NfcMoveItem);
             consumed = true;
             break;
-         case NfcPlaylistFileEdit_ViewPlaylistContent:
+         case NfcPlaylistPlaylistEdit_ViewPlaylistContent:
             scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_ViewPlaylistContent);
             consumed = true;
             break;

@@ -80,11 +80,11 @@ static void nfc_playlist_free(NfcPlaylist* nfc_playlist) {
 }
 
 void nfc_playlist_set_log_level() {
-#ifdef FURI_DEBUG
-   furi_log_set_level(FuriLogLevelTrace);
-#else
-   furi_log_set_level(FuriLogLevelInfo);
-#endif
+   #ifdef FURI_DEBUG
+      furi_log_set_level(FuriLogLevelTrace);
+   #else
+      furi_log_set_level(FuriLogLevelInfo);
+   #endif
 }
 
 int32_t nfc_playlist_main(void* p) {

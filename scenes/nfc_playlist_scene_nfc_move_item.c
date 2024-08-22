@@ -56,7 +56,6 @@ void nfc_playlist_nfc_move_item_scene_on_enter(void* context) {
       nfc_playlist->settings.playlist_length,
       nfc_playlist_nfc_move_item_options_change_callback,
       nfc_playlist);
-
    variable_item_set_current_value_index(target_selector, 0);
    variable_item_set_current_value_text(target_selector, "1");
 
@@ -66,7 +65,6 @@ void nfc_playlist_nfc_move_item_scene_on_enter(void* context) {
       nfc_playlist->settings.playlist_length,
       nfc_playlist_nfc_move_item_options_change_callback,
       nfc_playlist);
-
    variable_item_set_current_value_index(destination_selector, 0);
    variable_item_set_current_value_text(destination_selector, "1");
 
@@ -98,7 +96,6 @@ bool nfc_playlist_nfc_move_item_scene_on_event(void* context, SceneManagerEvent 
                   if(counter == selected_target) {
                      furi_string_trim(line);
                      furi_string_cat_printf(tmp_target_str, "%s", furi_string_get_cstr(line));
-                     furi_string_reset(line);
                      stream_rewind(stream);
                      counter = 0;
                      break;
