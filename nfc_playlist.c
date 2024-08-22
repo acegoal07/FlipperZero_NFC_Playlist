@@ -17,14 +17,12 @@ static NfcPlaylist* nfc_playlist_alloc() {
    furi_assert(nfc_playlist);
    nfc_playlist->scene_manager = scene_manager_alloc(&nfc_playlist_scene_handlers, nfc_playlist);
    nfc_playlist->view_dispatcher = view_dispatcher_alloc();
-   view_dispatcher_enable_queue(nfc_playlist->view_dispatcher);
    nfc_playlist->variable_item_list = variable_item_list_alloc();
    nfc_playlist->submenu = submenu_alloc();
    nfc_playlist->widget= widget_alloc();
 
    nfc_playlist->settings.playlist_path = furi_string_alloc();
    nfc_playlist->file_browser_output = furi_string_alloc();
-   nfc_playlist->settings.playlist_selected = false;
    nfc_playlist->settings.emulate_timeout = default_emulate_timeout;
    nfc_playlist->settings.emulate_delay = default_emulate_delay;
    nfc_playlist->settings.emulate_led_indicator = default_emulate_led_indicator;
@@ -82,11 +80,11 @@ static void nfc_playlist_free(NfcPlaylist* nfc_playlist) {
 }
 
 void nfc_playlist_set_log_level() {
-#ifdef FURI_DEBUG
-   furi_log_set_level(FuriLogLevelTrace);
-#else
-   furi_log_set_level(FuriLogLevelInfo);
-#endif
+   #ifdef FURI_DEBUG
+      furi_log_set_level(FuriLogLevelTrace);
+   #else
+      furi_log_set_level(FuriLogLevelInfo);
+   #endif
 }
 
 int32_t nfc_playlist_main(void* p) {

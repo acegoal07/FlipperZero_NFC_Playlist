@@ -31,6 +31,7 @@
 
 #define PLAYLIST_LOCATION "/ext/apps_data/nfc_playlist/"
 #define PLAYLIST_DIR "/ext/apps_data/nfc_playlist"
+#define NFC_ITEM_LOCATION "/ext/nfc/"
 #define MAX_PLAYLIST_NAME_LEN 50
 
 typedef enum {
@@ -45,7 +46,6 @@ typedef enum {
 typedef struct {
    FuriString* playlist_path;
    uint8_t playlist_length;
-   bool playlist_selected;
    uint8_t emulate_timeout;
    uint8_t emulate_delay;
    bool emulate_led_indicator;

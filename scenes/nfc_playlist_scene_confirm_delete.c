@@ -32,15 +32,17 @@ bool nfc_playlist_confirm_delete_scene_on_event(void* context, SceneManagerEvent
          case GuiButtonTypeRight:
             Storage* storage = furi_record_open(RECORD_STORAGE);
             if (storage_simply_remove(storage, furi_string_get_cstr(nfc_playlist->settings.playlist_path))) {
-               nfc_playlist->settings.playlist_selected = false;
                furi_string_reset(nfc_playlist->settings.playlist_path);               
             }
             furi_record_close(RECORD_STORAGE);
             scene_manager_search_and_switch_to_previous_scene(nfc_playlist->scene_manager, NfcPlaylistScene_MainMenu);
             consumed = true;
             break;
-         default:
+         case GuiButtonTypeLeft:
             scene_manager_previous_scene(nfc_playlist->scene_manager);
+            consumed = true;
+            break;
+         default:
             break;
       }
    }
