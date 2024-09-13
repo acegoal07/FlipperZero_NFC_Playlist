@@ -1,5 +1,7 @@
 #include "../nfc_playlist.h"
 
+bool playlist_exist_already_new = false;
+
 int32_t nfc_playlist_name_new_playlist_thread_task(void* context) {
    NfcPlaylist* nfc_playlist = context;
 
@@ -15,6 +17,8 @@ int32_t nfc_playlist_name_new_playlist_thread_task(void* context) {
          furi_string_swap(nfc_playlist->settings.playlist_path, file_name);
          nfc_playlist->settings.playlist_length = 0;
       }
+   } else {
+      playlist_exist_already_new = true;
    }
 
    furi_string_free(file_name);
@@ -29,12 +33,19 @@ void nfc_playlist_name_new_playlist_thread_state_callback(FuriThreadState state,
    if(state == FuriThreadStateStopped) {
       furi_thread_yield();
       nfc_playlist->thread = NULL;
-      scene_manager_search_and_switch_to_previous_scene(nfc_playlist->scene_manager, NfcPlaylistScene_MainMenu);
+      if (playlist_exist_already_new) {
+         scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_ErrorPlaylistAlreadyExists);
+      } else {
+         scene_manager_search_and_switch_to_previous_scene(nfc_playlist->scene_manager, NfcPlaylistScene_MainMenu);
+      }
    }
 }
 
 void nfc_playlist_name_new_playlist_menu_callback(void* context) {
    NfcPlaylist* nfc_playlist = context;
+
+   playlist_exist_already_new = false;
+
    nfc_playlist->thread = furi_thread_alloc_ex("NfcPlaylistCreator", 1024, nfc_playlist_name_new_playlist_thread_task, nfc_playlist);
    furi_thread_set_state_context(nfc_playlist->thread, nfc_playlist);
    furi_thread_set_state_callback(nfc_playlist->thread, nfc_playlist_name_new_playlist_thread_state_callback);
