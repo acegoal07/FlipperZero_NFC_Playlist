@@ -29,8 +29,12 @@ As i know these firmwares are supported and working if you know any more please 
 - Remove NFC Item (Opens a menu allowing you to select a line to remove from the playlist)
 - Move NFC Item (Allows you to change the order of the NFC items in the playlist)
 - View playlist content (Allows you to view the contents of the playlist)
+## Feedback:
+Any feedback is welcome and would be very much appreciated
+
+<a href="https://github.com/acegoal07/FlipperZero_NFC_Playlist/issues/new?assignees=acegoal07&labels=enhancement&projects=&template=feature_request.md&title=%5BFEATURE%7D">Feature request </a>
+
+<a href="https://github.com/acegoal07/FlipperZero_NFC_Playlist/issues/new?assignees=acegoal07&labels=bug&projects=&template=bug_report.md&title=%5BBUG%5D">Bug report</a>
 ## Feature ideas:
 - A function to allow you to add multiple nfc items to a playlist at once
 - A view playlist function which only shows the name of the playlist items excluding the file path
-
-Any feedback is welcome and would be very much appreciated
