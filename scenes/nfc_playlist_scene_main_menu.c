@@ -55,26 +55,26 @@ void nfc_playlist_main_menu_scene_on_enter(void* context) {
 bool nfc_playlist_main_menu_scene_on_event(void* context, SceneManagerEvent event) {
    NfcPlaylist* nfc_playlist = context;
    bool consumed = false;
-   if (event.type == SceneManagerEventTypeCustom) {
+   if(event.type == SceneManagerEventTypeCustom) {
       switch(event.event) {
-         case NfcPlaylistMainMenu_Start:
-            scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_Emulation);
-            consumed = true;
-            break;
-         case NfcPlaylistMainMenu_PlaylistSelect:
-            scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_PlaylistSelect);
-            consumed = true;
-            break;
-         case NfcPlaylistMainMenu_FileEdit:
-            scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_PlaylistEdit);
-            consumed = true;
-            break;
-         case NfcPlaylistMainMenu_Settings:
-            scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_Settings);
-            consumed = true;
-            break;
-         default:
-            break;
+      case NfcPlaylistMainMenu_Start:
+         scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_Emulation);
+         consumed = true;
+         break;
+      case NfcPlaylistMainMenu_PlaylistSelect:
+         scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_PlaylistSelect);
+         consumed = true;
+         break;
+      case NfcPlaylistMainMenu_FileEdit:
+         scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_PlaylistEdit);
+         consumed = true;
+         break;
+      case NfcPlaylistMainMenu_Settings:
+         scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_Settings);
+         consumed = true;
+         break;
+      default:
+         break;
       }
    }
    return consumed;

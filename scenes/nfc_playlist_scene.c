@@ -23,8 +23,8 @@ void (*const nfc_playlist_on_exit_handlers[])(void* context) = {
 
 // Initialize scene handlers configuration structure
 const SceneManagerHandlers nfc_playlist_scene_handlers = {
-   .on_enter_handlers = nfc_playlist_on_enter_handlers,
-   .on_event_handlers = nfc_playlist_on_event_handlers,
-   .on_exit_handlers = nfc_playlist_on_exit_handlers,
-   .scene_num = NfcPlaylistScene_Count,
+    .on_enter_handlers = nfc_playlist_on_enter_handlers,
+    .on_event_handlers = nfc_playlist_on_event_handlers,
+    .on_exit_handlers = nfc_playlist_on_exit_handlers,
+    .scene_num = NfcPlaylistScene_Count,
 };
