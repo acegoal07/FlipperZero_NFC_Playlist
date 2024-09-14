@@ -91,36 +91,37 @@ bool nfc_playlist_playlist_edit_scene_on_event(void* context, SceneManagerEvent 
    bool consumed = false;
    if(event.type == SceneManagerEventTypeCustom) {
       switch(event.event) {
-         case NfcPlaylistPlaylistEdit_CreatePlaylist:
-            scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_NameNewPlaylist);
-            consumed = true;
-            break;
-         case NfcPlaylistPlaylistEdit_DeletePlaylist:
-            scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_ConfirmDelete);
-            consumed = true;
-            break;
-         case NfcPlaylistPlaylistEdit_RenamePlaylist:
-            scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_PlaylistRename);
-            consumed = true;
-            break;
-         case NfcPlaylistPlaylistEdit_AddNfcItem:
-            scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_NfcAdd);
-            consumed = true;
-            break;
-         case NfcPlaylistPlaylistEdit_RemoveNfcItem:
-            scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_NfcRemove);
-            consumed = true;
-            break;
-         case NfcPlaylistPlaylistEdit_MoveNfcItem:
-            scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_NfcMoveItem);
-            consumed = true;
-            break;
-         case NfcPlaylistPlaylistEdit_ViewPlaylistContent:
-            scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_ViewPlaylistContent);
-            consumed = true;
-            break;
-         default:
-            break;
+      case NfcPlaylistPlaylistEdit_CreatePlaylist:
+         scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_NameNewPlaylist);
+         consumed = true;
+         break;
+      case NfcPlaylistPlaylistEdit_DeletePlaylist:
+         scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_ConfirmDelete);
+         consumed = true;
+         break;
+      case NfcPlaylistPlaylistEdit_RenamePlaylist:
+         scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_PlaylistRename);
+         consumed = true;
+         break;
+      case NfcPlaylistPlaylistEdit_AddNfcItem:
+         scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_NfcAdd);
+         consumed = true;
+         break;
+      case NfcPlaylistPlaylistEdit_RemoveNfcItem:
+         scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_NfcRemove);
+         consumed = true;
+         break;
+      case NfcPlaylistPlaylistEdit_MoveNfcItem:
+         scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_NfcMoveItem);
+         consumed = true;
+         break;
+      case NfcPlaylistPlaylistEdit_ViewPlaylistContent:
+         scene_manager_next_scene(
+            nfc_playlist->scene_manager, NfcPlaylistScene_ViewPlaylistContent);
+         consumed = true;
+         break;
+      default:
+         break;
       }
    }
    return consumed;
