@@ -108,7 +108,7 @@ bool nfc_playlist_nfc_move_item_scene_on_event(void* context, SceneManagerEvent 
                counter++;
                if(counter == selected_target) {
                   furi_string_trim(line);
-                  furi_string_cat_printf(tmp_target_str, "%s", furi_string_get_cstr(line));
+                  furi_string_cat(tmp_target_str, line);
                   stream_rewind(stream);
                   counter = 0;
                   break;
@@ -125,7 +125,7 @@ bool nfc_playlist_nfc_move_item_scene_on_event(void* context, SceneManagerEvent 
                }
 
                if(!furi_string_empty(tmp_new_order_str)) {
-                  furi_string_cat_printf(tmp_new_order_str, "%s", "\n");
+                  furi_string_cat(tmp_new_order_str, "\n");
                }
 
                furi_string_trim(line);
@@ -146,7 +146,7 @@ bool nfc_playlist_nfc_move_item_scene_on_event(void* context, SceneManagerEvent 
                   }
                   furi_string_free(tmp_target_str);
                } else {
-                  furi_string_cat_printf(tmp_new_order_str, "%s", furi_string_get_cstr(line));
+                  furi_string_cat(tmp_new_order_str, furi_string_get_cstr(line));
                }
             }
 
