@@ -10,7 +10,7 @@ All the playlists should be placed in ext/apps_data/nfc_playlist but can be plac
 ```
 An example file can be found in the repository
 ## Feedback:
-Any feedback is welcome and would be very much appreciated as this is my first C project
+Any feedback is welcome and would be very much appreciated as it helps me to improve and build upon the project
 - <a href="https://github.com/acegoal07/FlipperZero_NFC_Playlist/issues/new?assignees=acegoal07&labels=enhancement&projects=&template=feature_request.md&title=%5BFEATURE%7D">Feature request</a>
 - <a href="https://github.com/acegoal07/FlipperZero_NFC_Playlist/issues/new?assignees=acegoal07&labels=bug&projects=&template=bug_report.md&title=%5BBUG%5D">Bug report</a>
 ## Supported Firmwares
