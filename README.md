@@ -15,8 +15,9 @@ Any feedback is welcome and would be very much appreciated as it helps me to imp
 - <a href="https://github.com/acegoal07/FlipperZero_NFC_Playlist/issues/new?assignees=acegoal07&labels=bug&projects=&template=bug_report.md&title=%5BBUG%5D">Bug report</a>
 ## Supported Firmwares
 As i know these firmwares are supported and working if you know any more please let me know
-- <a href="https://github.com/Next-Flip/Momentum-Firmware">Momentum</a>
-- <a href="https://github.com/RogueMaster/flipperzero-firmware-wPlugins">RogueMaster</a>
+- <a href="https://github.com/Next-Flip/Momentum-Firmware" target="_blank">Momentum</a>
+- <a href="https://github.com/RogueMaster/flipperzero-firmware-wPlugins" target="_blank">RogueMaster</a>
+- <a href="https://github.com/DarkFlippers/unleashed-firmware" target="_blank">Unleashed</a>
 ## Settings:
 - Emulate time (How long the NFC card will be emulated for)
 - Delay time (How long the gap between the cards will be)
