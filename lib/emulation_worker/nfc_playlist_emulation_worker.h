@@ -5,6 +5,10 @@
 #include <nfc/nfc_device.h>
 #include <nfc/nfc_listener.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef enum NfcPlaylistEmulationWorkerState {
    NfcPlaylistEmulationWorkerState_Emulating,
    NfcPlaylistEmulationWorkerState_Stopped
@@ -35,3 +39,7 @@ void nfc_playlist_emulation_worker_clear_nfc_data(
    NfcPlaylistEmulationWorker* nfc_playlist_emulation_worker);
 bool nfc_playlist_emulation_worker_valid_protocol(
    NfcPlaylistEmulationWorker* nfc_playlist_emulation_worker);
+
+#ifdef __cplusplus
+}
+#endif

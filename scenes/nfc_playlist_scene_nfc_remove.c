@@ -5,18 +5,19 @@ typedef enum {
    NfcPlaylistNfcRemove_RemoveLine
 } NfcPlaylistNfcRemoveMenuSelection;
 
-uint8_t selected_line;
+static uint8_t selected_line;
 
-void nfc_playlist_nfc_remove_menu_callback(void* context, uint32_t index) {
+static void nfc_playlist_nfc_remove_menu_callback(void* context, uint32_t index) {
+   furi_assert(context);
    NfcPlaylist* nfc_playlist = context;
    scene_manager_handle_custom_event(nfc_playlist->scene_manager, index);
 }
 
-void nfc_playlist_nfc_remove_options_change_callback(VariableItem* item) {
+static void nfc_playlist_nfc_remove_options_change_callback(VariableItem* item) {
    NfcPlaylist* nfc_playlist = variable_item_get_context(item);
 
    uint8_t current_option =
-      variable_item_list_get_selected_item_index(nfc_playlist->variable_item_list);
+      variable_item_list_get_selected_item_index(nfc_playlist->views.variable_item_list);
    uint8_t option_value_index = variable_item_get_current_value_index(item);
 
    switch(current_option) {
@@ -37,10 +38,10 @@ void nfc_playlist_nfc_remove_scene_on_enter(void* context) {
 
    selected_line = nfc_playlist->settings.playlist_length;
 
-   variable_item_list_set_header(nfc_playlist->variable_item_list, "Remove Nfc Item");
+   variable_item_list_set_header(nfc_playlist->views.variable_item_list, "Remove Nfc Item");
 
    VariableItem* line_selector = variable_item_list_add(
-      nfc_playlist->variable_item_list,
+      nfc_playlist->views.variable_item_list,
       "Select Line",
       nfc_playlist->settings.playlist_length,
       nfc_playlist_nfc_remove_options_change_callback,
@@ -58,14 +59,14 @@ void nfc_playlist_nfc_remove_scene_on_enter(void* context) {
       "Playlist\nis empty");
 
    VariableItem* remove_button =
-      variable_item_list_add(nfc_playlist->variable_item_list, "Remove Line", 0, NULL, NULL);
+      variable_item_list_add(nfc_playlist->views.variable_item_list, "Remove Line", 0, NULL, NULL);
    variable_item_set_locked(
       remove_button,
       nfc_playlist->settings.playlist_length == 0 ? true : false,
       "Playlist\nis empty");
 
    variable_item_list_set_enter_callback(
-      nfc_playlist->variable_item_list, nfc_playlist_nfc_remove_menu_callback, nfc_playlist);
+      nfc_playlist->views.variable_item_list, nfc_playlist_nfc_remove_menu_callback, nfc_playlist);
 
    view_dispatcher_switch_to_view(nfc_playlist->view_dispatcher, NfcPlaylistView_VariableItemList);
 }
@@ -113,7 +114,7 @@ bool nfc_playlist_nfc_remove_scene_on_event(void* context, SceneManagerEvent eve
             scene_manager_previous_scene(nfc_playlist->scene_manager);
          } else {
             VariableItem* Line_selector = variable_item_list_get(
-               nfc_playlist->variable_item_list, NfcPlaylistNfcRemove_LineSelector);
+               nfc_playlist->views.variable_item_list, NfcPlaylistNfcRemove_LineSelector);
             variable_item_set_values_count(Line_selector, nfc_playlist->settings.playlist_length);
             variable_item_set_current_value_index(Line_selector, selected_line - 1);
 
@@ -133,5 +134,5 @@ bool nfc_playlist_nfc_remove_scene_on_event(void* context, SceneManagerEvent eve
 
 void nfc_playlist_nfc_remove_scene_on_exit(void* context) {
    NfcPlaylist* nfc_playlist = context;
-   variable_item_list_reset(nfc_playlist->variable_item_list);
+   variable_item_list_reset(nfc_playlist->views.variable_item_list);
 }

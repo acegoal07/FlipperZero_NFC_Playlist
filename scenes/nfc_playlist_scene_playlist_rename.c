@@ -1,13 +1,14 @@
 #include "../nfc_playlist.h"
 
-void nfc_playlist_playlist_rename_menu_callback(void* context) {
+static void nfc_playlist_playlist_rename_menu_callback(void* context) {
+   furi_assert(context);
    NfcPlaylist* nfc_playlist = context;
 
    FuriString* old_file_path = furi_string_alloc();
    path_extract_dirname(furi_string_get_cstr(nfc_playlist->settings.playlist_path), old_file_path);
    FuriString* new_file_path = furi_string_alloc_set(old_file_path);
    path_concat(
-      furi_string_get_cstr(old_file_path), nfc_playlist->text_input_output, new_file_path);
+      furi_string_get_cstr(old_file_path), nfc_playlist->views.text_input.output, new_file_path);
    furi_string_free(old_file_path);
    furi_string_cat_str(new_file_path, ".txt");
 
@@ -40,17 +41,17 @@ void nfc_playlist_playlist_rename_scene_on_enter(void* context) {
    path_extract_filename_no_ext(
       furi_string_get_cstr(nfc_playlist->settings.playlist_path), tmp_file_name);
 
-   nfc_playlist->text_input_output = malloc(MAX_PLAYLIST_NAME_LEN + 1);
-   strcpy(nfc_playlist->text_input_output, furi_string_get_cstr(tmp_file_name));
+   nfc_playlist->views.text_input.output = malloc(MAX_PLAYLIST_NAME_LEN + 1);
+   strcpy(nfc_playlist->views.text_input.output, furi_string_get_cstr(tmp_file_name));
    furi_string_free(tmp_file_name);
 
-   text_input_set_header_text(nfc_playlist->text_input, "Enter new file name");
-   text_input_set_minimum_length(nfc_playlist->text_input, 1);
+   text_input_set_header_text(nfc_playlist->views.text_input.view, "Enter new file name");
+   text_input_set_minimum_length(nfc_playlist->views.text_input.view, 1);
    text_input_set_result_callback(
-      nfc_playlist->text_input,
+      nfc_playlist->views.text_input.view,
       nfc_playlist_playlist_rename_menu_callback,
       nfc_playlist,
-      nfc_playlist->text_input_output,
+      nfc_playlist->views.text_input.output,
       MAX_PLAYLIST_NAME_LEN,
       false);
 
@@ -76,6 +77,6 @@ bool nfc_playlist_playlist_rename_scene_on_event(void* context, SceneManagerEven
 
 void nfc_playlist_playlist_rename_scene_on_exit(void* context) {
    NfcPlaylist* nfc_playlist = context;
-   free(nfc_playlist->text_input_output);
-   text_input_reset(nfc_playlist->text_input);
+   free(nfc_playlist->views.text_input.output);
+   text_input_reset(nfc_playlist->views.text_input.view);
 }

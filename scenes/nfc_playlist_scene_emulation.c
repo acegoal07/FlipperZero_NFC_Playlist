@@ -8,18 +8,19 @@ typedef enum NfcPlaylistEmulationState {
 
 static NfcPlaylistEmulationState EmulationState = NfcPlaylistEmulationState_Stopped;
 
-int32_t nfc_playlist_emulation_task(void* context) {
+static int32_t nfc_playlist_emulation_task(void* context) {
+   furi_assert(context);
    NfcPlaylist* nfc_playlist = context;
 
    Storage* storage = furi_record_open(RECORD_STORAGE);
    Stream* stream = file_stream_alloc(storage);
 
-   popup_set_context(nfc_playlist->popup, nfc_playlist);
+   popup_set_context(nfc_playlist->views.popup, nfc_playlist);
    view_dispatcher_switch_to_view(nfc_playlist->view_dispatcher, NfcPlaylistView_Popup);
 
    if(nfc_playlist->settings.playlist_length == 0) {
       popup_set_header(
-         nfc_playlist->popup,
+         nfc_playlist->views.popup,
          "The playlist you have\nselected is empty",
          64,
          5,
@@ -52,15 +53,17 @@ int32_t nfc_playlist_emulation_task(void* context) {
 
          if(delay_setting_on) {
             if(delay_active && !skip_delay) {
-               popup_set_header(nfc_playlist->popup, "Delaying", 64, 5, AlignCenter, AlignTop);
-               start_blink(nfc_playlist, NfcPlaylistLedState_Error);
+               popup_set_header(
+                  nfc_playlist->views.popup, "Delaying", 64, 5, AlignCenter, AlignTop);
+               nfc_playlist_led_worker_start(
+                  nfc_playlist->notification_app, NfcPlaylistLedState_Error);
                int time_counter_delay_ms =
                   (options_emulate_delay[nfc_playlist->settings.emulate_delay] * 1000);
                while(time_counter_delay_ms > 0 &&
                      EmulationState == NfcPlaylistEmulationState_Emulating) {
                   furi_string_printf(tmp_counter_str, "%ds", (time_counter_delay_ms / 1000));
                   popup_set_text(
-                     nfc_playlist->popup,
+                     nfc_playlist->views.popup,
                      furi_string_get_cstr(tmp_counter_str),
                      64,
                      50,
@@ -97,17 +100,18 @@ int32_t nfc_playlist_emulation_task(void* context) {
                "ERROR invalid file type:\n%s",
                furi_string_get_cstr(tmp_file_name));
             popup_set_header(
-               nfc_playlist->popup,
+               nfc_playlist->views.popup,
                furi_string_get_cstr(tmp_header_str),
                64,
                5,
                AlignCenter,
                AlignTop);
-            start_blink(nfc_playlist, NfcPlaylistLedState_Error);
+            nfc_playlist_led_worker_start(
+               nfc_playlist->notification_app, NfcPlaylistLedState_Error);
             while(time_counter_ms > 0 && EmulationState == NfcPlaylistEmulationState_Emulating) {
                furi_string_printf(tmp_counter_str, "%ds", (time_counter_ms / 1000));
                popup_set_text(
-                  nfc_playlist->popup,
+                  nfc_playlist->views.popup,
                   furi_string_get_cstr(tmp_counter_str),
                   64,
                   50,
@@ -125,17 +129,18 @@ int32_t nfc_playlist_emulation_task(void* context) {
             furi_string_printf(
                tmp_header_str, "ERROR file not found:\n%s", furi_string_get_cstr(tmp_file_name));
             popup_set_header(
-               nfc_playlist->popup,
+               nfc_playlist->views.popup,
                furi_string_get_cstr(tmp_header_str),
                64,
                5,
                AlignCenter,
                AlignTop);
-            start_blink(nfc_playlist, NfcPlaylistLedState_Error);
+            nfc_playlist_led_worker_start(
+               nfc_playlist->notification_app, NfcPlaylistLedState_Error);
             while(time_counter_ms > 0 && EmulationState == NfcPlaylistEmulationState_Emulating) {
                furi_string_printf(tmp_counter_str, "%ds", (time_counter_ms / 1000));
                popup_set_text(
-                  nfc_playlist->popup,
+                  nfc_playlist->views.popup,
                   furi_string_get_cstr(tmp_counter_str),
                   64,
                   50,
@@ -146,29 +151,28 @@ int32_t nfc_playlist_emulation_task(void* context) {
             };
          } else {
             if(nfc_playlist_emulation_worker_set_nfc_data(
-                  nfc_playlist->nfc_playlist_emulation_worker,
-                  (char*)furi_string_get_cstr(line))) {
-               if(nfc_playlist_emulation_worker_valid_protocol(
-                     nfc_playlist->nfc_playlist_emulation_worker)) {
+                  nfc_playlist->emulation_worker, (char*)furi_string_get_cstr(line))) {
+               if(nfc_playlist_emulation_worker_valid_protocol(nfc_playlist->emulation_worker)) {
                   // Emulate NFC data
                   furi_string_printf(
                      tmp_header_str, "Emulating:\n%s", furi_string_get_cstr(tmp_file_name));
                   popup_set_header(
-                     nfc_playlist->popup,
+                     nfc_playlist->views.popup,
                      furi_string_get_cstr(tmp_header_str),
                      64,
                      5,
                      AlignCenter,
                      AlignTop);
-                  nfc_playlist_emulation_worker_start(nfc_playlist->nfc_playlist_emulation_worker);
-                  start_blink(nfc_playlist, NfcPlaylistLedState_Normal);
-                  while(nfc_playlist_emulation_worker_is_emulating(
-                           nfc_playlist->nfc_playlist_emulation_worker) &&
-                        time_counter_ms > 0 &&
-                        EmulationState == NfcPlaylistEmulationState_Emulating) {
+                  nfc_playlist_emulation_worker_start(nfc_playlist->emulation_worker);
+                  nfc_playlist_led_worker_start(
+                     nfc_playlist->notification_app, NfcPlaylistLedState_Normal);
+                  while(
+                     nfc_playlist_emulation_worker_is_emulating(nfc_playlist->emulation_worker) &&
+                     time_counter_ms > 0 &&
+                     EmulationState == NfcPlaylistEmulationState_Emulating) {
                      furi_string_printf(tmp_counter_str, "%ds", (time_counter_ms / 1000));
                      popup_set_text(
-                        nfc_playlist->popup,
+                        nfc_playlist->views.popup,
                         furi_string_get_cstr(tmp_counter_str),
                         64,
                         50,
@@ -177,13 +181,11 @@ int32_t nfc_playlist_emulation_task(void* context) {
                      furi_delay_ms(50);
                      time_counter_ms -= 50;
                   };
-                  nfc_playlist_emulation_worker_stop(nfc_playlist->nfc_playlist_emulation_worker);
-                  nfc_playlist_emulation_worker_clear_nfc_data(
-                     nfc_playlist->nfc_playlist_emulation_worker);
+                  nfc_playlist_emulation_worker_stop(nfc_playlist->emulation_worker);
+                  nfc_playlist_emulation_worker_clear_nfc_data(nfc_playlist->emulation_worker);
                } else {
                   // Invalid NFC protocol error
-                  nfc_playlist_emulation_worker_clear_nfc_data(
-                     nfc_playlist->nfc_playlist_emulation_worker);
+                  nfc_playlist_emulation_worker_clear_nfc_data(nfc_playlist->emulation_worker);
                   if(nfc_playlist->settings.skip_error) {
                      skip_delay = true;
                      continue;
@@ -193,18 +195,19 @@ int32_t nfc_playlist_emulation_task(void* context) {
                      "ERROR invalid\nNFC protocol:\n%s",
                      furi_string_get_cstr(tmp_file_name));
                   popup_set_header(
-                     nfc_playlist->popup,
+                     nfc_playlist->views.popup,
                      furi_string_get_cstr(tmp_header_str),
                      64,
                      5,
                      AlignCenter,
                      AlignTop);
-                  start_blink(nfc_playlist, NfcPlaylistLedState_Error);
+                  nfc_playlist_led_worker_start(
+                     nfc_playlist->notification_app, NfcPlaylistLedState_Error);
                   while(time_counter_ms > 0 &&
                         EmulationState == NfcPlaylistEmulationState_Emulating) {
                      furi_string_printf(tmp_counter_str, "%ds", (time_counter_ms / 1000));
                      popup_set_text(
-                        nfc_playlist->popup,
+                        nfc_playlist->views.popup,
                         furi_string_get_cstr(tmp_counter_str),
                         64,
                         50,
@@ -225,18 +228,19 @@ int32_t nfc_playlist_emulation_task(void* context) {
                   "ERROR failed to\nload NFC data:\n%s",
                   furi_string_get_cstr(tmp_file_name));
                popup_set_header(
-                  nfc_playlist->popup,
+                  nfc_playlist->views.popup,
                   furi_string_get_cstr(tmp_header_str),
                   64,
                   5,
                   AlignCenter,
                   AlignTop);
-               start_blink(nfc_playlist, NfcPlaylistLedState_Error);
+               nfc_playlist_led_worker_start(
+                  nfc_playlist->notification_app, NfcPlaylistLedState_Error);
                while(time_counter_ms > 0 &&
                      EmulationState == NfcPlaylistEmulationState_Emulating) {
                   furi_string_printf(tmp_counter_str, "%ds", (time_counter_ms / 1000));
                   popup_set_text(
-                     nfc_playlist->popup,
+                     nfc_playlist->views.popup,
                      furi_string_get_cstr(tmp_counter_str),
                      64,
                      50,
@@ -248,7 +252,7 @@ int32_t nfc_playlist_emulation_task(void* context) {
             }
          }
       }
-      stop_blink(nfc_playlist);
+      nfc_playlist_led_worker_stop(nfc_playlist->notification_app);
 
       furi_string_free(line);
       furi_string_free(tmp_header_str);
@@ -257,9 +261,9 @@ int32_t nfc_playlist_emulation_task(void* context) {
       furi_string_free(tmp_file_ext);
       file_stream_close(stream);
 
-      popup_reset(nfc_playlist->popup);
+      popup_reset(nfc_playlist->views.popup);
       popup_set_header(
-         nfc_playlist->popup,
+         nfc_playlist->views.popup,
          EmulationState == NfcPlaylistEmulationState_Canceled ? "Emulation stopped" :
                                                                 "Emulation finished",
          64,
@@ -268,9 +272,9 @@ int32_t nfc_playlist_emulation_task(void* context) {
          AlignTop);
    } else {
       popup_set_header(
-         nfc_playlist->popup, "Failed to open playlist", 64, 5, AlignCenter, AlignTop);
+         nfc_playlist->views.popup, "Failed to open playlist", 64, 5, AlignCenter, AlignTop);
    }
-   popup_set_text(nfc_playlist->popup, "Press back", 64, 50, AlignCenter, AlignTop);
+   popup_set_text(nfc_playlist->views.popup, "Press back", 64, 50, AlignCenter, AlignTop);
 
    furi_record_close(RECORD_STORAGE);
    stream_free(stream);
@@ -280,32 +284,33 @@ int32_t nfc_playlist_emulation_task(void* context) {
    return 0;
 }
 
-void nfc_playlist_emulation_setup(void* context) {
+static void nfc_playlist_emulation_setup(void* context) {
    NfcPlaylist* nfc_playlist = context;
    nfc_playlist->thread = furi_thread_alloc_ex(
       "NfcPlaylistEmulationWorker", 4096, nfc_playlist_emulation_task, nfc_playlist);
-   nfc_playlist->nfc_playlist_emulation_worker = nfc_playlist_emulation_worker_alloc();
+   nfc_playlist->emulation_worker = nfc_playlist_emulation_worker_alloc();
 }
 
-void nfc_playlist_emulation_free(NfcPlaylist* nfc_playlist) {
+static void nfc_playlist_emulation_free(NfcPlaylist* nfc_playlist) {
    furi_assert(nfc_playlist);
    furi_thread_free(nfc_playlist->thread);
-   nfc_playlist_emulation_worker_free(nfc_playlist->nfc_playlist_emulation_worker);
+   nfc_playlist_emulation_worker_free(nfc_playlist->emulation_worker);
    nfc_playlist->thread = NULL;
-   nfc_playlist->nfc_playlist_emulation_worker = NULL;
+   nfc_playlist->emulation_worker = NULL;
 }
 
-void nfc_playlist_emulation_start(NfcPlaylist* nfc_playlist) {
+static void nfc_playlist_emulation_start(NfcPlaylist* nfc_playlist) {
    furi_assert(nfc_playlist);
    furi_thread_start(nfc_playlist->thread);
 }
 
-void nfc_playlist_emulation_stop(NfcPlaylist* nfc_playlist) {
+static void nfc_playlist_emulation_stop(NfcPlaylist* nfc_playlist) {
    furi_assert(nfc_playlist);
    furi_thread_join(nfc_playlist->thread);
 }
 
 void nfc_playlist_emulation_scene_on_enter(void* context) {
+   furi_assert(context);
    NfcPlaylist* nfc_playlist = context;
    nfc_playlist_emulation_setup(nfc_playlist);
    nfc_playlist_emulation_start(nfc_playlist);
@@ -314,7 +319,8 @@ void nfc_playlist_emulation_scene_on_enter(void* context) {
 bool nfc_playlist_emulation_scene_on_event(void* context, SceneManagerEvent event) {
    UNUSED(context);
    bool consumed = false;
-   if(event.event == 0 && EmulationState == NfcPlaylistEmulationState_Emulating) {
+   if(event.type == SceneManagerEventTypeBack &&
+      EmulationState == NfcPlaylistEmulationState_Emulating) {
       EmulationState = NfcPlaylistEmulationState_Canceled;
       consumed = true;
    }
@@ -322,9 +328,10 @@ bool nfc_playlist_emulation_scene_on_event(void* context, SceneManagerEvent even
 }
 
 void nfc_playlist_emulation_scene_on_exit(void* context) {
+   furi_assert(context);
    NfcPlaylist* nfc_playlist = context;
    EmulationState = NfcPlaylistEmulationState_Stopped;
    nfc_playlist_emulation_stop(nfc_playlist);
    nfc_playlist_emulation_free(nfc_playlist);
-   popup_reset(nfc_playlist->popup);
+   popup_reset(nfc_playlist->views.popup);
 }

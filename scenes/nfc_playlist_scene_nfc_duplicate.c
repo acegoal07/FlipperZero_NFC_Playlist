@@ -1,6 +1,8 @@
 #include "../nfc_playlist.h"
 
-void nfc_playlist_nfc_duplicate_menu_callback(GuiButtonType result, InputType type, void* context) {
+static void
+   nfc_playlist_nfc_duplicate_menu_callback(GuiButtonType result, InputType type, void* context) {
+   furi_assert(context);
    NfcPlaylist* nfc_playlist = context;
    if(type == InputTypeShort) {
       view_dispatcher_send_custom_event(nfc_playlist->view_dispatcher, result);
@@ -8,10 +10,11 @@ void nfc_playlist_nfc_duplicate_menu_callback(GuiButtonType result, InputType ty
 }
 
 void nfc_playlist_nfc_duplicate_scene_on_enter(void* context) {
+   furi_assert(context);
    NfcPlaylist* nfc_playlist = context;
 
    widget_add_text_box_element(
-      nfc_playlist->widget,
+      nfc_playlist->views.widget,
       0,
       0,
       128,
@@ -21,13 +24,13 @@ void nfc_playlist_nfc_duplicate_scene_on_enter(void* context) {
       "\e#This item is already\nin the playlist\e#",
       false);
    widget_add_button_element(
-      nfc_playlist->widget,
+      nfc_playlist->views.widget,
       GuiButtonTypeLeft,
       "Try Again",
       nfc_playlist_nfc_duplicate_menu_callback,
       nfc_playlist);
    widget_add_button_element(
-      nfc_playlist->widget,
+      nfc_playlist->views.widget,
       GuiButtonTypeRight,
       "Continue",
       nfc_playlist_nfc_duplicate_menu_callback,
@@ -37,6 +40,7 @@ void nfc_playlist_nfc_duplicate_scene_on_enter(void* context) {
 }
 
 bool nfc_playlist_nfc_duplicate_scene_on_event(void* context, SceneManagerEvent event) {
+   furi_assert(context);
    NfcPlaylist* nfc_playlist = context;
    bool consumed = false;
    if(event.type == SceneManagerEventTypeCustom) {
@@ -61,11 +65,12 @@ bool nfc_playlist_nfc_duplicate_scene_on_event(void* context, SceneManagerEvent 
             if(!furi_string_empty(tmp_str)) {
                furi_string_cat(tmp_str, "\n");
             }
-            furi_string_cat(tmp_str, furi_string_get_cstr(nfc_playlist->file_browser_output));
+            furi_string_cat(
+               tmp_str, furi_string_get_cstr(nfc_playlist->views.file_browser.output));
             stream_clean(stream);
             stream_write_string(stream, tmp_str);
             nfc_playlist->settings.playlist_length++;
-            furi_string_reset(nfc_playlist->file_browser_output);
+            furi_string_reset(nfc_playlist->views.file_browser.output);
 
             file_stream_close(stream);
             furi_string_free(tmp_str);
@@ -73,14 +78,14 @@ bool nfc_playlist_nfc_duplicate_scene_on_event(void* context, SceneManagerEvent 
          stream_free(stream);
          furi_record_close(RECORD_STORAGE);
 
-         furi_string_reset(nfc_playlist->file_browser_output);
+         furi_string_reset(nfc_playlist->views.file_browser.output);
          scene_manager_search_and_switch_to_previous_scene(
             nfc_playlist->scene_manager, NfcPlaylistScene_PlaylistEdit);
          consumed = true;
          break;
       }
       case GuiButtonTypeLeft:
-         furi_string_reset(nfc_playlist->file_browser_output);
+         furi_string_reset(nfc_playlist->views.file_browser.output);
          scene_manager_previous_scene(nfc_playlist->scene_manager);
          consumed = true;
          break;
@@ -92,6 +97,7 @@ bool nfc_playlist_nfc_duplicate_scene_on_event(void* context, SceneManagerEvent 
 }
 
 void nfc_playlist_nfc_duplicate_scene_on_exit(void* context) {
+   furi_assert(context);
    NfcPlaylist* nfc_playlist = context;
-   widget_reset(nfc_playlist->widget);
+   widget_reset(nfc_playlist->views.widget);
 }
