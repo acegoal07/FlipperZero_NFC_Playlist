@@ -20,6 +20,8 @@ typedef enum {
    NfcPlaylistWorkerState_Ready,
    NfcPlaylistWorkerState_Emulating,
    NfcPlaylistWorkerState_Delaying,
+   NfcPlaylistWorkerState_InvalidFileType,
+   NfcPlaylistWorkerState_FileDoesNotExist,
    NfcPlaylistWorkerState_FailedToLoadPlaylist,
    NfcPlaylistWorkerState_FailedToLoadNfcCard,
    NfcPlaylistWorkerState_Stopped

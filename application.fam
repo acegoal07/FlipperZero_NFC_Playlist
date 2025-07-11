@@ -13,7 +13,7 @@ App(
     fap_description="A Tool used to running through a list of NFC cards",
     fap_private_libs=[
         Lib(
-            name="emulation_worker",
+            name="playlist_worker",
         ),
         Lib(
             name="led_worker",

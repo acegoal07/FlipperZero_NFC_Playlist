@@ -26,12 +26,12 @@ bool nfc_playlist_emulation_scene_on_event(void* context, SceneManagerEvent even
    } else if(event.type == SceneManagerEventTypeTick) {
       switch(nfc_playlist->worker_info.worker->state) {
       case NfcPlaylistWorkerState_Emulating: {
-         if(!header_str_static) header_str_static = furi_string_alloc();
-         if(!text_str_static) text_str_static = furi_string_alloc();
          if(nfc_playlist->worker_info.settings->emulate_led_indicator) {
             nfc_playlist_led_worker_start(
                nfc_playlist->notification_app, NfcPlaylistLedState_Normal);
          }
+         if(!header_str_static) header_str_static = furi_string_alloc();
+         if(!text_str_static) text_str_static = furi_string_alloc();
          FuriString* nfc_card_name = furi_string_alloc();
          path_extract_filename_no_ext(
             furi_string_get_cstr(nfc_playlist->worker_info.worker->nfc_card_path), nfc_card_name);
@@ -57,12 +57,12 @@ bool nfc_playlist_emulation_scene_on_event(void* context, SceneManagerEvent even
          consumed = true;
          break;
       }
-      case NfcPlaylistWorkerState_Delaying:
-         if(!text_str_static) text_str_static = furi_string_alloc();
+      case NfcPlaylistWorkerState_Delaying: {
          if(nfc_playlist->worker_info.settings->emulate_led_indicator) {
             nfc_playlist_led_worker_start(
                nfc_playlist->notification_app, NfcPlaylistLedState_Normal);
          }
+         if(!text_str_static) text_str_static = furi_string_alloc();
          popup_set_header(nfc_playlist->views.popup, "Delaying", 64, 5, AlignCenter, AlignTop);
          furi_string_printf(
             text_str_static, "%ds", (nfc_playlist->worker_info.worker->ms_counter / 1000));
@@ -75,29 +75,109 @@ bool nfc_playlist_emulation_scene_on_event(void* context, SceneManagerEvent even
             AlignTop);
          consumed = true;
          break;
-      case NfcPlaylistWorkerState_FailedToLoadPlaylist:
+      }
+      case NfcPlaylistWorkerState_FailedToLoadPlaylist: {
          if(nfc_playlist->worker_info.settings->emulate_led_indicator) {
             nfc_playlist_led_worker_start(
                nfc_playlist->notification_app, NfcPlaylistLedState_Error);
          }
-         FURI_LOG_E("NFC Playlist", "Failed to load playlist");
+         nfc_playlist_worker_stop(nfc_playlist->worker_info.worker);
+         scene_manager_next_scene(
+            nfc_playlist->scene_manager, NfcPlaylistScene_FailedToLoadPlaylist);
          consumed = true;
          break;
-      case NfcPlaylistWorkerState_FailedToLoadNfcCard:
+      }
+      case NfcPlaylistWorkerState_FailedToLoadNfcCard: {
          if(nfc_playlist->worker_info.settings->emulate_led_indicator) {
             nfc_playlist_led_worker_start(
                nfc_playlist->notification_app, NfcPlaylistLedState_Error);
          }
-         popup_set_header(nfc_playlist->views.popup, "Error", 64, 16, AlignCenter, AlignTop);
+         if(!header_str_static) header_str_static = furi_string_alloc();
+         if(!text_str_static) text_str_static = furi_string_alloc();
+         furi_string_set_str(header_str_static, "Failed to load:\n");
+         furi_string_cat(header_str_static, nfc_playlist->worker_info.worker->nfc_card_path);
+         popup_set_header(
+            nfc_playlist->views.popup,
+            furi_string_get_cstr(header_str_static),
+            64,
+            5,
+            AlignCenter,
+            AlignTop);
+         furi_string_printf(
+            text_str_static, "%ds", (nfc_playlist->worker_info.worker->ms_counter / 1000));
          popup_set_text(
-            nfc_playlist->views.popup, "Failed to load\nNFC card", 64, 32, AlignCenter, AlignTop);
+            nfc_playlist->views.popup,
+            furi_string_get_cstr(text_str_static),
+            64,
+            50,
+            AlignCenter,
+            AlignTop);
          consumed = true;
          break;
-      case NfcPlaylistWorkerState_Stopped:
+      }
+      case NfcPlaylistWorkerState_InvalidFileType: {
+         if(nfc_playlist->worker_info.settings->emulate_led_indicator) {
+            nfc_playlist_led_worker_start(
+               nfc_playlist->notification_app, NfcPlaylistLedState_Error);
+         }
+         if(!header_str_static) header_str_static = furi_string_alloc();
+         if(!text_str_static) text_str_static = furi_string_alloc();
+         furi_string_set_str(header_str_static, "Invalid file type:\n");
+         furi_string_cat(header_str_static, nfc_playlist->worker_info.worker->nfc_card_path);
+         popup_set_header(
+            nfc_playlist->views.popup,
+            furi_string_get_cstr(header_str_static),
+            64,
+            5,
+            AlignCenter,
+            AlignTop);
+         furi_string_printf(
+            text_str_static, "%ds", (nfc_playlist->worker_info.worker->ms_counter / 1000));
+         popup_set_text(
+            nfc_playlist->views.popup,
+            furi_string_get_cstr(text_str_static),
+            64,
+            50,
+            AlignCenter,
+            AlignTop);
+         consumed = true;
+         break;
+      }
+      case NfcPlaylistWorkerState_FileDoesNotExist: {
+         if(nfc_playlist->worker_info.settings->emulate_led_indicator) {
+            nfc_playlist_led_worker_start(
+               nfc_playlist->notification_app, NfcPlaylistLedState_Error);
+         }
+         if(!header_str_static) header_str_static = furi_string_alloc();
+         if(!text_str_static) text_str_static = furi_string_alloc();
+         furi_string_set_str(header_str_static, "File does not exist:\n");
+         furi_string_cat(header_str_static, nfc_playlist->worker_info.worker->nfc_card_path);
+         popup_set_header(
+            nfc_playlist->views.popup,
+            furi_string_get_cstr(header_str_static),
+            64,
+            5,
+            AlignCenter,
+            AlignTop);
+         furi_string_printf(
+            text_str_static, "%ds", (nfc_playlist->worker_info.worker->ms_counter / 1000));
+         popup_set_text(
+            nfc_playlist->views.popup,
+            furi_string_get_cstr(text_str_static),
+            64,
+            50,
+            AlignCenter,
+            AlignTop);
+         consumed = true;
+         break;
+         break;
+      }
+      case NfcPlaylistWorkerState_Stopped: {
          nfc_playlist_worker_stop(nfc_playlist->worker_info.worker);
          scene_manager_next_scene(nfc_playlist->scene_manager, NfcPlaylistScene_EmulationFinished);
          consumed = true;
          break;
+      }
       default:
          break;
       }

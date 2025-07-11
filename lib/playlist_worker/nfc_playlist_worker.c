@@ -22,8 +22,70 @@ int32_t nfc_playlist_worker_task(void* context) {
             continue;
          }
 
+         furi_string_set(worker->nfc_card_path, furi_string_get_cstr(line));
          playlist_position++;
 
+         // Check if the file has a valid NFC extension
+         FuriString* file_ext = furi_string_alloc();
+         path_extract_ext_str(worker->nfc_card_path, file_ext);
+         if(furi_string_cmpi(file_ext, ".nfc") != 0) {
+            furi_string_free(file_ext);
+            if(worker->settings->skip_error) {
+               continue;
+            }
+            worker->state = NfcPlaylistWorkerState_InvalidFileType;
+            worker->ms_counter =
+               (options_emulate_timeout[worker->settings->emulate_timeout] * 1000);
+            while(worker->state == NfcPlaylistWorkerState_InvalidFileType &&
+                  worker->ms_counter > 0 && worker->state != NfcPlaylistWorkerState_Stopped) {
+               furi_delay_ms(10);
+               worker->ms_counter -= 10;
+            }
+
+            worker->ms_counter = (options_emulate_delay[worker->settings->emulate_delay] * 1000);
+            if(worker->settings->emulate_delay &&
+               playlist_position < worker->settings->playlist_length && worker->ms_counter > 0 &&
+               worker->state != NfcPlaylistWorkerState_Stopped) {
+               worker->state = NfcPlaylistWorkerState_Delaying;
+               while(worker->ms_counter > 0 && worker->state == NfcPlaylistWorkerState_Delaying &&
+                     worker->state != NfcPlaylistWorkerState_Stopped) {
+                  furi_delay_ms(10);
+                  worker->ms_counter -= 10;
+               }
+            }
+            continue;
+         }
+         furi_string_free(file_ext);
+
+         // Check if the file exists
+         if(!storage_file_exists(storage, furi_string_get_cstr(worker->nfc_card_path))) {
+            if(worker->settings->skip_error) {
+               continue;
+            }
+            worker->state = NfcPlaylistWorkerState_FileDoesNotExist;
+            worker->ms_counter =
+               (options_emulate_timeout[worker->settings->emulate_timeout] * 1000);
+            while(worker->state == NfcPlaylistWorkerState_FileDoesNotExist &&
+                  worker->ms_counter > 0 && worker->state != NfcPlaylistWorkerState_Stopped) {
+               furi_delay_ms(10);
+               worker->ms_counter -= 10;
+            }
+
+            worker->ms_counter = (options_emulate_delay[worker->settings->emulate_delay] * 1000);
+            if(worker->settings->emulate_delay &&
+               playlist_position < worker->settings->playlist_length && worker->ms_counter > 0 &&
+               worker->state != NfcPlaylistWorkerState_Stopped) {
+               worker->state = NfcPlaylistWorkerState_Delaying;
+               while(worker->ms_counter > 0 && worker->state == NfcPlaylistWorkerState_Delaying &&
+                     worker->state != NfcPlaylistWorkerState_Stopped) {
+                  furi_delay_ms(10);
+                  worker->ms_counter -= 10;
+               }
+            }
+            continue;
+         }
+
+         // Load the NFC card and emulate it
          if(nfc_device_load(worker->nfc_device, furi_string_get_cstr(line))) {
             worker->nfc_protocol = nfc_device_get_protocol(worker->nfc_device);
 
@@ -34,9 +96,9 @@ int32_t nfc_playlist_worker_task(void* context) {
             nfc_listener_start(worker->nfc_listener, NULL, NULL);
 
             worker->state = NfcPlaylistWorkerState_Emulating;
-            furi_string_set(worker->nfc_card_path, furi_string_get_cstr(line));
 
-            worker->ms_counter = (options_emulate_timeout[worker->settings->emulate_timeout] * 1000);
+            worker->ms_counter =
+               (options_emulate_timeout[worker->settings->emulate_timeout] * 1000);
             while(worker->state == NfcPlaylistWorkerState_Emulating && worker->ms_counter > 0 &&
                   worker->state != NfcPlaylistWorkerState_Stopped) {
                furi_delay_ms(10);
@@ -58,7 +120,30 @@ int32_t nfc_playlist_worker_task(void* context) {
                }
             }
          } else {
+            // Failed to load NFC card
+            if(worker->settings->skip_error) {
+               continue;
+            }
             worker->state = NfcPlaylistWorkerState_FailedToLoadNfcCard;
+            worker->ms_counter =
+               (options_emulate_timeout[worker->settings->emulate_timeout] * 1000);
+            while(worker->state == NfcPlaylistWorkerState_FailedToLoadNfcCard &&
+                  worker->ms_counter > 0 && worker->state != NfcPlaylistWorkerState_Stopped) {
+               furi_delay_ms(10);
+               worker->ms_counter -= 10;
+            }
+
+            worker->ms_counter = (options_emulate_delay[worker->settings->emulate_delay] * 1000);
+            if(worker->settings->emulate_delay &&
+               playlist_position < worker->settings->playlist_length && worker->ms_counter > 0 &&
+               worker->state != NfcPlaylistWorkerState_Stopped) {
+               worker->state = NfcPlaylistWorkerState_Delaying;
+               while(worker->ms_counter > 0 && worker->state == NfcPlaylistWorkerState_Delaying &&
+                     worker->state != NfcPlaylistWorkerState_Stopped) {
+                  furi_delay_ms(10);
+                  worker->ms_counter -= 10;
+               }
+            }
          }
       }
 
@@ -66,6 +151,7 @@ int32_t nfc_playlist_worker_task(void* context) {
       furi_string_free(line);
       worker->state = NfcPlaylistWorkerState_Stopped;
    } else {
+      // Failed to load playlist
       worker->state = NfcPlaylistWorkerState_FailedToLoadPlaylist;
    }
 

@@ -38,8 +38,7 @@ typedef enum {
    NfcPlaylistView_Widget,
    NfcPlaylistView_FileBrowser,
    NfcPlaylistView_VariableItemList,
-   NfcPlaylistView_TextInput,
-   NfcPlaylistView_Count
+   NfcPlaylistView_TextInput
 } NfcPlaylistViews;
 
 typedef struct {
