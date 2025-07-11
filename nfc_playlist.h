@@ -12,9 +12,9 @@
 #include <gui/modules/text_input.h>
 #include <gui/modules/widget.h>
 
-#include <notification/notification_messages.h>
-
 #include <storage/storage.h>
+
+#include <notification/notification_messages.h>
 
 #include <toolbox/stream/stream.h>
 #include <toolbox/stream/file_stream.h>
@@ -24,7 +24,7 @@
 
 #include "scenes/nfc_playlist_scene.h"
 
-#include "lib/emulation_worker/nfc_playlist_emulation_worker.h"
+#include "lib/playlist_worker/nfc_playlist_worker.h"
 #include "lib/led_worker/nfc_playlist_led_worker.h"
 
 #define PLAYLIST_LOCATION     "/ext/apps_data/nfc_playlist/"
@@ -36,20 +36,11 @@ typedef enum {
    NfcPlaylistView_Submenu,
    NfcPlaylistView_Popup,
    NfcPlaylistView_Widget,
-   NfcPlaylistView_VariableItemList,
    NfcPlaylistView_FileBrowser,
+   NfcPlaylistView_VariableItemList,
    NfcPlaylistView_TextInput,
    NfcPlaylistView_Count
 } NfcPlaylistViews;
-
-typedef struct {
-   FuriString* playlist_path;
-   uint8_t playlist_length;
-   uint8_t emulate_timeout;
-   uint8_t emulate_delay;
-   bool emulate_led_indicator;
-   bool skip_error;
-} NfcPlaylistSettings;
 
 typedef struct {
    FileBrowser* view;
@@ -65,24 +56,20 @@ typedef struct {
    Submenu* submenu;
    Popup* popup;
    Widget* widget;
-   VariableItemList* variable_item_list;
    NfcPlaylistFileBrowserView file_browser;
    NfcPlaylistTextInputView text_input;
-} NfcPLaylistView;
+   VariableItemList* variable_item_list;
+} NfcPlaylistView;
+
+typedef struct {
+   NfcPlaylistWorkerSettings* settings;
+   NfcPlaylistWorker* worker;
+} NfcPlaylistWorkerInfo;
 
 typedef struct {
    SceneManager* scene_manager;
    ViewDispatcher* view_dispatcher;
-   NfcPlaylistSettings settings;
-   NfcPLaylistView views;
-   NfcPlaylistEmulationWorker* emulation_worker;
    NotificationApp* notification_app;
-   FuriThread* thread;
+   NfcPlaylistView views;
+   NfcPlaylistWorkerInfo worker_info;
 } NfcPlaylist;
-
-static const int options_emulate_timeout[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-static const int default_emulate_timeout = 4;
-static const int options_emulate_delay[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
-static const int default_emulate_delay = 0;
-static const bool default_emulate_led_indicator = true;
-static const bool default_skip_error = false;

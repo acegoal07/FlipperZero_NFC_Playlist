@@ -24,29 +24,29 @@ static void nfc_playlist_settings_options_change_callback(VariableItem* item) {
 
    switch(current_option) {
    case NfcPlaylistSettings_Timeout: {
-      nfc_playlist->settings.emulate_timeout = option_value_index;
+      nfc_playlist->worker_info.settings->emulate_timeout = option_value_index;
       FuriString* tmp_str = furi_string_alloc_printf(
-         "%ds", options_emulate_timeout[nfc_playlist->settings.emulate_timeout]);
+         "%ds", options_emulate_timeout[nfc_playlist->worker_info.settings->emulate_timeout]);
       variable_item_set_current_value_text(item, furi_string_get_cstr(tmp_str));
       furi_string_free(tmp_str);
       break;
    }
    case NfcPlaylistSettings_Delay: {
-      nfc_playlist->settings.emulate_delay = option_value_index;
+      nfc_playlist->worker_info.settings->emulate_delay = option_value_index;
       FuriString* tmp_str = furi_string_alloc_printf(
-         "%ds", options_emulate_delay[nfc_playlist->settings.emulate_delay]);
+         "%ds", options_emulate_delay[nfc_playlist->worker_info.settings->emulate_delay]);
       variable_item_set_current_value_text(item, furi_string_get_cstr(tmp_str));
       furi_string_free(tmp_str);
       break;
    }
    case NfcPlaylistSettings_LedIndicator:
-      nfc_playlist->settings.emulate_led_indicator = option_value_index;
+      nfc_playlist->worker_info.settings->emulate_led_indicator = option_value_index;
       variable_item_set_current_value_text(
-         item, nfc_playlist->settings.emulate_led_indicator ? "ON" : "OFF");
+         item, nfc_playlist->worker_info.settings->emulate_led_indicator ? "ON" : "OFF");
       break;
    case NfcPlaylistSettings_SkipError:
-      nfc_playlist->settings.skip_error = option_value_index;
-      variable_item_set_current_value_text(item, nfc_playlist->settings.skip_error ? "ON" : "OFF");
+      nfc_playlist->worker_info.settings->skip_error = option_value_index;
+      variable_item_set_current_value_text(item, nfc_playlist->worker_info.settings->skip_error ? "ON" : "OFF");
       break;
    default:
       break;
@@ -66,9 +66,9 @@ void nfc_playlist_settings_scene_on_enter(void* context) {
       nfc_playlist_settings_options_change_callback,
       nfc_playlist);
    variable_item_set_current_value_index(
-      emulation_timeout_setting, nfc_playlist->settings.emulate_timeout);
+      emulation_timeout_setting, nfc_playlist->worker_info.settings->emulate_timeout);
    furi_string_printf(
-      tmp_str, "%ds", options_emulate_timeout[nfc_playlist->settings.emulate_timeout]);
+      tmp_str, "%ds", options_emulate_timeout[nfc_playlist->worker_info.settings->emulate_timeout]);
    variable_item_set_current_value_text(emulation_timeout_setting, furi_string_get_cstr(tmp_str));
 
    VariableItem* emulation_delay_setting = variable_item_list_add(
@@ -78,8 +78,8 @@ void nfc_playlist_settings_scene_on_enter(void* context) {
       nfc_playlist_settings_options_change_callback,
       nfc_playlist);
    variable_item_set_current_value_index(
-      emulation_delay_setting, nfc_playlist->settings.emulate_delay);
-   furi_string_printf(tmp_str, "%ds", options_emulate_delay[nfc_playlist->settings.emulate_delay]);
+      emulation_delay_setting, nfc_playlist->worker_info.settings->emulate_delay);
+   furi_string_printf(tmp_str, "%ds", options_emulate_delay[nfc_playlist->worker_info.settings->emulate_delay]);
    variable_item_set_current_value_text(emulation_delay_setting, furi_string_get_cstr(tmp_str));
 
    furi_string_free(tmp_str);
@@ -91,10 +91,10 @@ void nfc_playlist_settings_scene_on_enter(void* context) {
       nfc_playlist_settings_options_change_callback,
       nfc_playlist);
    variable_item_set_current_value_index(
-      emulation_led_indicator_setting, nfc_playlist->settings.emulate_led_indicator);
+      emulation_led_indicator_setting, nfc_playlist->worker_info.settings->emulate_led_indicator);
    variable_item_set_current_value_text(
       emulation_led_indicator_setting,
-      nfc_playlist->settings.emulate_led_indicator ? "ON" : "OFF");
+      nfc_playlist->worker_info.settings->emulate_led_indicator ? "ON" : "OFF");
 
    VariableItem* emulation_skip_error_setting = variable_item_list_add(
       nfc_playlist->views.variable_item_list,
@@ -103,9 +103,9 @@ void nfc_playlist_settings_scene_on_enter(void* context) {
       nfc_playlist_settings_options_change_callback,
       nfc_playlist);
    variable_item_set_current_value_index(
-      emulation_skip_error_setting, nfc_playlist->settings.skip_error);
+      emulation_skip_error_setting, nfc_playlist->worker_info.settings->skip_error);
    variable_item_set_current_value_text(
-      emulation_skip_error_setting, nfc_playlist->settings.skip_error ? "ON" : "OFF");
+      emulation_skip_error_setting, nfc_playlist->worker_info.settings->skip_error ? "ON" : "OFF");
 
    variable_item_list_add(nfc_playlist->views.variable_item_list, "Reset settings", 0, NULL, NULL);
 
@@ -128,44 +128,44 @@ bool nfc_playlist_settings_scene_on_event(void* context, SceneManagerEvent event
       case NfcPlaylistSettings_Reset: {
          FuriString* tmp_str = furi_string_alloc();
 
-         nfc_playlist->settings.emulate_timeout = default_emulate_timeout;
+         nfc_playlist->worker_info.settings->emulate_timeout = default_emulate_timeout;
          VariableItem* emulation_timeout_setting = variable_item_list_get(
             nfc_playlist->views.variable_item_list, NfcPlaylistSettings_Timeout);
          variable_item_set_current_value_index(
-            emulation_timeout_setting, nfc_playlist->settings.emulate_timeout);
+            emulation_timeout_setting, nfc_playlist->worker_info.settings->emulate_timeout);
          furi_string_printf(
-            tmp_str, "%ds", options_emulate_timeout[nfc_playlist->settings.emulate_timeout]);
+            tmp_str, "%ds", options_emulate_timeout[nfc_playlist->worker_info.settings->emulate_timeout]);
          variable_item_set_current_value_text(
             emulation_timeout_setting, furi_string_get_cstr(tmp_str));
 
-         nfc_playlist->settings.emulate_delay = default_emulate_delay;
+         nfc_playlist->worker_info.settings->emulate_delay = default_emulate_delay;
          VariableItem* emulation_delay_setting = variable_item_list_get(
             nfc_playlist->views.variable_item_list, NfcPlaylistSettings_Delay);
          variable_item_set_current_value_index(
-            emulation_delay_setting, nfc_playlist->settings.emulate_delay);
+            emulation_delay_setting, nfc_playlist->worker_info.settings->emulate_delay);
          furi_string_printf(
-            tmp_str, "%ds", options_emulate_delay[nfc_playlist->settings.emulate_delay]);
+            tmp_str, "%ds", options_emulate_delay[nfc_playlist->worker_info.settings->emulate_delay]);
          variable_item_set_current_value_text(
             emulation_delay_setting, furi_string_get_cstr(tmp_str));
 
          furi_string_free(tmp_str);
 
-         nfc_playlist->settings.emulate_led_indicator = default_emulate_led_indicator;
+         nfc_playlist->worker_info.settings->emulate_led_indicator = default_emulate_led_indicator;
          VariableItem* emulation_led_indicator_setting = variable_item_list_get(
             nfc_playlist->views.variable_item_list, NfcPlaylistSettings_LedIndicator);
          variable_item_set_current_value_index(
-            emulation_led_indicator_setting, nfc_playlist->settings.emulate_led_indicator);
+            emulation_led_indicator_setting, nfc_playlist->worker_info.settings->emulate_led_indicator);
          variable_item_set_current_value_text(
             emulation_led_indicator_setting,
-            nfc_playlist->settings.emulate_led_indicator ? "ON" : "OFF");
+            nfc_playlist->worker_info.settings->emulate_led_indicator ? "ON" : "OFF");
 
-         nfc_playlist->settings.skip_error = default_skip_error;
+         nfc_playlist->worker_info.settings->skip_error = default_skip_error;
          VariableItem* emulation_skip_error_setting = variable_item_list_get(
             nfc_playlist->views.variable_item_list, NfcPlaylistSettings_SkipError);
          variable_item_set_current_value_index(
-            emulation_skip_error_setting, nfc_playlist->settings.skip_error);
+            emulation_skip_error_setting, nfc_playlist->worker_info.settings->skip_error);
          variable_item_set_current_value_text(
-            emulation_skip_error_setting, nfc_playlist->settings.skip_error ? "ON" : "OFF");
+            emulation_skip_error_setting, nfc_playlist->worker_info.settings->skip_error ? "ON" : "OFF");
 
          consumed = true;
          break;

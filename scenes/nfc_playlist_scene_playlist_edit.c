@@ -21,7 +21,7 @@ void nfc_playlist_playlist_edit_scene_on_enter(void* context) {
 
    submenu_set_header(nfc_playlist->views.submenu, "Edit Playlist");
 
-   bool playlist_path_empty = furi_string_empty(nfc_playlist->settings.playlist_path);
+   bool playlist_path_empty = furi_string_empty(nfc_playlist->worker_info.settings->playlist_path);
 
    submenu_add_item(
       nfc_playlist->views.submenu,

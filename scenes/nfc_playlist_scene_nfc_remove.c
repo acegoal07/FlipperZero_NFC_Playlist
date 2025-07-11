@@ -36,18 +36,18 @@ static void nfc_playlist_nfc_remove_options_change_callback(VariableItem* item) 
 void nfc_playlist_nfc_remove_scene_on_enter(void* context) {
    NfcPlaylist* nfc_playlist = context;
 
-   selected_line = nfc_playlist->settings.playlist_length;
+   selected_line = nfc_playlist->worker_info.settings->playlist_length;
 
    variable_item_list_set_header(nfc_playlist->views.variable_item_list, "Remove Nfc Item");
 
    VariableItem* line_selector = variable_item_list_add(
       nfc_playlist->views.variable_item_list,
       "Select Line",
-      nfc_playlist->settings.playlist_length,
+      nfc_playlist->worker_info.settings->playlist_length,
       nfc_playlist_nfc_remove_options_change_callback,
       nfc_playlist);
    variable_item_set_current_value_index(
-      line_selector, nfc_playlist->settings.playlist_length - 1);
+      line_selector, nfc_playlist->worker_info.settings->playlist_length - 1);
 
    FuriString* tmp_str = furi_string_alloc_printf("%d", selected_line);
    variable_item_set_current_value_text(line_selector, furi_string_get_cstr(tmp_str));
@@ -55,14 +55,14 @@ void nfc_playlist_nfc_remove_scene_on_enter(void* context) {
 
    variable_item_set_locked(
       line_selector,
-      nfc_playlist->settings.playlist_length == 0 ? true : false,
+      nfc_playlist->worker_info.settings->playlist_length == 0 ? true : false,
       "Playlist\nis empty");
 
    VariableItem* remove_button =
       variable_item_list_add(nfc_playlist->views.variable_item_list, "Remove Line", 0, NULL, NULL);
    variable_item_set_locked(
       remove_button,
-      nfc_playlist->settings.playlist_length == 0 ? true : false,
+      nfc_playlist->worker_info.settings->playlist_length == 0 ? true : false,
       "Playlist\nis empty");
 
    variable_item_list_set_enter_callback(
@@ -82,7 +82,7 @@ bool nfc_playlist_nfc_remove_scene_on_event(void* context, SceneManagerEvent eve
 
          if(file_stream_open(
                stream,
-               furi_string_get_cstr(nfc_playlist->settings.playlist_path),
+               furi_string_get_cstr(nfc_playlist->worker_info.settings->playlist_path),
                FSAM_READ_WRITE,
                FSOM_OPEN_EXISTING)) {
             FuriString* line = furi_string_alloc();
@@ -104,8 +104,8 @@ bool nfc_playlist_nfc_remove_scene_on_event(void* context, SceneManagerEvent eve
             stream_write_string(stream, tmp_str);
             furi_string_free(tmp_str);
             file_stream_close(stream);
-            nfc_playlist->settings.playlist_length--;
-            selected_line = nfc_playlist->settings.playlist_length;
+            nfc_playlist->worker_info.settings->playlist_length--;
+            selected_line = nfc_playlist->worker_info.settings->playlist_length;
          }
          stream_free(stream);
          furi_record_close(RECORD_STORAGE);
@@ -115,7 +115,7 @@ bool nfc_playlist_nfc_remove_scene_on_event(void* context, SceneManagerEvent eve
          } else {
             VariableItem* Line_selector = variable_item_list_get(
                nfc_playlist->views.variable_item_list, NfcPlaylistNfcRemove_LineSelector);
-            variable_item_set_values_count(Line_selector, nfc_playlist->settings.playlist_length);
+            variable_item_set_values_count(Line_selector, nfc_playlist->worker_info.settings->playlist_length);
             variable_item_set_current_value_index(Line_selector, selected_line - 1);
 
             FuriString* tmp_str = furi_string_alloc_printf("%d", selected_line);

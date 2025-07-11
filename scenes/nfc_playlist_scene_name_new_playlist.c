@@ -14,8 +14,8 @@ void nfc_playlist_name_new_playlist_menu_callback(void* context) {
    if(!storage_file_exists(storage, file_name_cstr)) {
       if(storage_file_open(file, file_name_cstr, FSAM_READ_WRITE, FSOM_CREATE_NEW)) {
          storage_file_close(file);
-         furi_string_swap(nfc_playlist->settings.playlist_path, file_name);
-         nfc_playlist->settings.playlist_length = 0;
+         furi_string_swap(nfc_playlist->worker_info.settings->playlist_path, file_name);
+         nfc_playlist->worker_info.settings->playlist_length = 0;
       }
    } else {
       playlist_exist_already = true;

@@ -61,7 +61,7 @@ void nfc_playlist_nfc_move_item_scene_on_enter(void* context) {
    VariableItem* target_selector = variable_item_list_add(
       nfc_playlist->views.variable_item_list,
       "Select Target",
-      nfc_playlist->settings.playlist_length,
+      nfc_playlist->worker_info.settings->playlist_length,
       nfc_playlist_nfc_move_item_options_change_callback,
       nfc_playlist);
    variable_item_set_current_value_index(target_selector, 0);
@@ -70,7 +70,7 @@ void nfc_playlist_nfc_move_item_scene_on_enter(void* context) {
    VariableItem* destination_selector = variable_item_list_add(
       nfc_playlist->views.variable_item_list,
       "Select Destination",
-      nfc_playlist->settings.playlist_length,
+      nfc_playlist->worker_info.settings->playlist_length,
       nfc_playlist_nfc_move_item_options_change_callback,
       nfc_playlist);
    variable_item_set_current_value_index(destination_selector, 0);
@@ -104,7 +104,7 @@ bool nfc_playlist_nfc_move_item_scene_on_event(void* context, SceneManagerEvent 
 
          if(file_stream_open(
                stream,
-               furi_string_get_cstr(nfc_playlist->settings.playlist_path),
+               furi_string_get_cstr(nfc_playlist->worker_info.settings->playlist_path),
                FSAM_READ_WRITE,
                FSOM_OPEN_EXISTING)) {
             FuriString* tmp_target_str = furi_string_alloc();

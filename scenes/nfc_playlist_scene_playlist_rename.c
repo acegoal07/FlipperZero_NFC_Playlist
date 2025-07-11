@@ -5,7 +5,7 @@ static void nfc_playlist_playlist_rename_menu_callback(void* context) {
    NfcPlaylist* nfc_playlist = context;
 
    FuriString* old_file_path = furi_string_alloc();
-   path_extract_dirname(furi_string_get_cstr(nfc_playlist->settings.playlist_path), old_file_path);
+   path_extract_dirname(furi_string_get_cstr(nfc_playlist->worker_info.settings->playlist_path), old_file_path);
    FuriString* new_file_path = furi_string_alloc_set(old_file_path);
    path_concat(
       furi_string_get_cstr(old_file_path), nfc_playlist->views.text_input.output, new_file_path);
@@ -18,12 +18,12 @@ static void nfc_playlist_playlist_rename_menu_callback(void* context) {
    if(!storage_file_exists(storage, furi_string_get_cstr(new_file_path))) {
       if(storage_common_rename(
             storage,
-            furi_string_get_cstr(nfc_playlist->settings.playlist_path),
+            furi_string_get_cstr(nfc_playlist->worker_info.settings->playlist_path),
             furi_string_get_cstr(new_file_path)) == FSE_OK) {
-         furi_string_swap(nfc_playlist->settings.playlist_path, new_file_path);
+         furi_string_swap(nfc_playlist->worker_info.settings->playlist_path, new_file_path);
       }
    } else {
-      if(furi_string_cmp(nfc_playlist->settings.playlist_path, new_file_path) != 0) {
+      if(furi_string_cmp(nfc_playlist->worker_info.settings->playlist_path, new_file_path) != 0) {
          playlist_exist_already = true;
       }
    }
@@ -39,7 +39,7 @@ void nfc_playlist_playlist_rename_scene_on_enter(void* context) {
 
    FuriString* tmp_file_name = furi_string_alloc();
    path_extract_filename_no_ext(
-      furi_string_get_cstr(nfc_playlist->settings.playlist_path), tmp_file_name);
+      furi_string_get_cstr(nfc_playlist->worker_info.settings->playlist_path), tmp_file_name);
 
    nfc_playlist->views.text_input.output = malloc(MAX_PLAYLIST_NAME_LEN + 1);
    strcpy(nfc_playlist->views.text_input.output, furi_string_get_cstr(tmp_file_name));

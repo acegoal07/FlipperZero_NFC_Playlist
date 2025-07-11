@@ -7,7 +7,7 @@ void nfc_playlist_view_playlist_content_scene_on_enter(void* context) {
    Storage* storage = furi_record_open(RECORD_STORAGE);
    Stream* stream = file_stream_alloc(storage);
 
-   if(nfc_playlist->settings.playlist_length == 0) {
+   if(nfc_playlist->worker_info.settings->playlist_length == 0) {
       widget_add_text_box_element(
          nfc_playlist->views.widget,
          4,
@@ -20,7 +20,7 @@ void nfc_playlist_view_playlist_content_scene_on_enter(void* context) {
          false);
    } else if(file_stream_open(
                 stream,
-                furi_string_get_cstr(nfc_playlist->settings.playlist_path),
+                furi_string_get_cstr(nfc_playlist->worker_info.settings->playlist_path),
                 FSAM_READ,
                 FSOM_OPEN_EXISTING)) {
       FuriString* line = furi_string_alloc();

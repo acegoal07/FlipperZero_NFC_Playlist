@@ -51,7 +51,7 @@ bool nfc_playlist_nfc_duplicate_scene_on_event(void* context, SceneManagerEvent 
 
          if(file_stream_open(
                stream,
-               furi_string_get_cstr(nfc_playlist->settings.playlist_path),
+               furi_string_get_cstr(nfc_playlist->worker_info.settings->playlist_path),
                FSAM_READ_WRITE,
                FSOM_OPEN_EXISTING)) {
             FuriString* line = furi_string_alloc();
@@ -69,7 +69,7 @@ bool nfc_playlist_nfc_duplicate_scene_on_event(void* context, SceneManagerEvent 
                tmp_str, furi_string_get_cstr(nfc_playlist->views.file_browser.output));
             stream_clean(stream);
             stream_write_string(stream, tmp_str);
-            nfc_playlist->settings.playlist_length++;
+            nfc_playlist->worker_info.settings->playlist_length++;
             furi_string_reset(nfc_playlist->views.file_browser.output);
 
             file_stream_close(stream);
