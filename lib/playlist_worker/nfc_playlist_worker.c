@@ -1,6 +1,6 @@
 #include "nfc_playlist_worker.h"
 
-int32_t nfc_playlist_worker_task(void* context) {
+static int32_t nfc_playlist_worker_task(void* context) {
    NfcPlaylistWorker* worker = context;
    furi_assert(worker);
 
