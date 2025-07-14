@@ -1,5 +1,46 @@
 #include "nfc_playlist_worker.h"
 
+/**
+ * Implements delay between NFC card emulations
+ * @param worker Pointer to the NfcPlaylistWorker instance
+ * @param playlist_position Current position in the playlist (0-based index)
+ */
+static void nfc_playlist_worker_delay(NfcPlaylistWorker* worker, int playlist_position) {
+   worker->ms_counter = (options_emulate_delay[worker->settings->emulate_delay] * 1000);
+   if(playlist_position < worker->settings->playlist_length && worker->ms_counter > 0 &&
+      worker->state != NfcPlaylistWorkerState_Stopped) {
+      worker->state = NfcPlaylistWorkerState_Delaying;
+      while(worker->ms_counter > 0 && worker->state == NfcPlaylistWorkerState_Delaying &&
+            worker->state != NfcPlaylistWorkerState_Stopped) {
+         furi_delay_ms(10);
+         worker->ms_counter -= 10;
+      }
+   }
+   worker->ms_counter = 0;
+}
+
+/**
+ * Handles countdown timer for various worker states
+ * @param worker Pointer to the NfcPlaylistWorker instance
+ * @param state The state to set during countdown (e.g., Emulating, Error states)
+ */
+static void
+   nfc_playlist_worker_countdown(NfcPlaylistWorker* worker, NfcPlaylistWorkerState state) {
+   worker->state = state;
+   worker->ms_counter = (options_emulate_timeout[worker->settings->emulate_timeout] * 1000);
+   while(worker->ms_counter > 0 && worker->state == state &&
+         worker->state != NfcPlaylistWorkerState_Stopped) {
+      furi_delay_ms(10);
+      worker->ms_counter -= 10;
+   }
+   worker->ms_counter = 0;
+}
+
+/**
+ * Main worker thread task that processes the NFC playlist
+ * @param context Pointer to NfcPlaylistWorker instance (cast from void*)
+ * @return int32_t Always returns 0 (success)
+ */
 static int32_t nfc_playlist_worker_task(void* context) {
    NfcPlaylistWorker* worker = context;
    furi_assert(worker);
@@ -33,26 +74,9 @@ static int32_t nfc_playlist_worker_task(void* context) {
             if(worker->settings->skip_error) {
                continue;
             }
-            worker->state = NfcPlaylistWorkerState_InvalidFileType;
-            worker->ms_counter =
-               (options_emulate_timeout[worker->settings->emulate_timeout] * 1000);
-            while(worker->state == NfcPlaylistWorkerState_InvalidFileType &&
-                  worker->ms_counter > 0 && worker->state != NfcPlaylistWorkerState_Stopped) {
-               furi_delay_ms(10);
-               worker->ms_counter -= 10;
-            }
 
-            worker->ms_counter = (options_emulate_delay[worker->settings->emulate_delay] * 1000);
-            if(worker->settings->emulate_delay &&
-               playlist_position < worker->settings->playlist_length && worker->ms_counter > 0 &&
-               worker->state != NfcPlaylistWorkerState_Stopped) {
-               worker->state = NfcPlaylistWorkerState_Delaying;
-               while(worker->ms_counter > 0 && worker->state == NfcPlaylistWorkerState_Delaying &&
-                     worker->state != NfcPlaylistWorkerState_Stopped) {
-                  furi_delay_ms(10);
-                  worker->ms_counter -= 10;
-               }
-            }
+            nfc_playlist_worker_countdown(worker, NfcPlaylistWorkerState_InvalidFileType);
+            nfc_playlist_worker_delay(worker, playlist_position);
             continue;
          }
          furi_string_free(file_ext);
@@ -62,26 +86,9 @@ static int32_t nfc_playlist_worker_task(void* context) {
             if(worker->settings->skip_error) {
                continue;
             }
-            worker->state = NfcPlaylistWorkerState_FileDoesNotExist;
-            worker->ms_counter =
-               (options_emulate_timeout[worker->settings->emulate_timeout] * 1000);
-            while(worker->state == NfcPlaylistWorkerState_FileDoesNotExist &&
-                  worker->ms_counter > 0 && worker->state != NfcPlaylistWorkerState_Stopped) {
-               furi_delay_ms(10);
-               worker->ms_counter -= 10;
-            }
 
-            worker->ms_counter = (options_emulate_delay[worker->settings->emulate_delay] * 1000);
-            if(worker->settings->emulate_delay &&
-               playlist_position < worker->settings->playlist_length && worker->ms_counter > 0 &&
-               worker->state != NfcPlaylistWorkerState_Stopped) {
-               worker->state = NfcPlaylistWorkerState_Delaying;
-               while(worker->ms_counter > 0 && worker->state == NfcPlaylistWorkerState_Delaying &&
-                     worker->state != NfcPlaylistWorkerState_Stopped) {
-                  furi_delay_ms(10);
-                  worker->ms_counter -= 10;
-               }
-            }
+            nfc_playlist_worker_countdown(worker, NfcPlaylistWorkerState_FileDoesNotExist);
+            nfc_playlist_worker_delay(worker, playlist_position);
             continue;
          }
 
@@ -95,15 +102,7 @@ static int32_t nfc_playlist_worker_task(void* context) {
                nfc_device_get_data(worker->nfc_device, worker->nfc_protocol));
             nfc_listener_start(worker->nfc_listener, NULL, NULL);
 
-            worker->state = NfcPlaylistWorkerState_Emulating;
-
-            worker->ms_counter =
-               (options_emulate_timeout[worker->settings->emulate_timeout] * 1000);
-            while(worker->state == NfcPlaylistWorkerState_Emulating && worker->ms_counter > 0 &&
-                  worker->state != NfcPlaylistWorkerState_Stopped) {
-               furi_delay_ms(10);
-               worker->ms_counter -= 10;
-            }
+            nfc_playlist_worker_countdown(worker, NfcPlaylistWorkerState_Emulating);
 
             nfc_listener_stop(worker->nfc_listener);
             nfc_listener_free(worker->nfc_listener);
@@ -114,42 +113,15 @@ static int32_t nfc_playlist_worker_task(void* context) {
                playlist_position = 0;
             }
 
-            worker->ms_counter = (options_emulate_delay[worker->settings->emulate_delay] * 1000);
-            if(worker->settings->emulate_delay &&
-               playlist_position < worker->settings->playlist_length && worker->ms_counter > 0 &&
-               worker->state != NfcPlaylistWorkerState_Stopped) {
-               worker->state = NfcPlaylistWorkerState_Delaying;
-               while(worker->ms_counter > 0 && worker->state == NfcPlaylistWorkerState_Delaying &&
-                     worker->state != NfcPlaylistWorkerState_Stopped) {
-                  furi_delay_ms(10);
-                  worker->ms_counter -= 10;
-               }
-            }
+            nfc_playlist_worker_delay(worker, playlist_position);
          } else {
             // Failed to load NFC card
             if(worker->settings->skip_error) {
                continue;
             }
-            worker->state = NfcPlaylistWorkerState_FailedToLoadNfcCard;
-            worker->ms_counter =
-               (options_emulate_timeout[worker->settings->emulate_timeout] * 1000);
-            while(worker->state == NfcPlaylistWorkerState_FailedToLoadNfcCard &&
-                  worker->ms_counter > 0 && worker->state != NfcPlaylistWorkerState_Stopped) {
-               furi_delay_ms(10);
-               worker->ms_counter -= 10;
-            }
 
-            worker->ms_counter = (options_emulate_delay[worker->settings->emulate_delay] * 1000);
-            if(worker->settings->emulate_delay &&
-               playlist_position < worker->settings->playlist_length && worker->ms_counter > 0 &&
-               worker->state != NfcPlaylistWorkerState_Stopped) {
-               worker->state = NfcPlaylistWorkerState_Delaying;
-               while(worker->ms_counter > 0 && worker->state == NfcPlaylistWorkerState_Delaying &&
-                     worker->state != NfcPlaylistWorkerState_Stopped) {
-                  furi_delay_ms(10);
-                  worker->ms_counter -= 10;
-               }
-            }
+            nfc_playlist_worker_countdown(worker, NfcPlaylistWorkerState_FailedToLoadNfcCard);
+            nfc_playlist_worker_delay(worker, playlist_position);
          }
       }
 
@@ -166,6 +138,11 @@ static int32_t nfc_playlist_worker_task(void* context) {
    return 0;
 }
 
+/**
+ * Allocates and initializes a new NFC playlist worker
+ * @param settings Pointer to worker settings (timeout, delay, loop, etc.)
+ * @return NfcPlaylistWorker* Pointer to newly allocated worker instance
+ */
 NfcPlaylistWorker* nfc_playlist_worker_alloc(NfcPlaylistWorkerSettings* settings) {
    NfcPlaylistWorker* worker = malloc(sizeof(NfcPlaylistWorker));
    furi_assert(worker);
@@ -185,6 +162,10 @@ NfcPlaylistWorker* nfc_playlist_worker_alloc(NfcPlaylistWorkerSettings* settings
    return worker;
 }
 
+/**
+ * Frees all resources associated with the NFC playlist worker
+ * @param worker Pointer to NfcPlaylistWorker instance to free
+ */
 void nfc_playlist_worker_free(NfcPlaylistWorker* worker) {
    furi_assert(worker);
 
@@ -201,12 +182,20 @@ void nfc_playlist_worker_free(NfcPlaylistWorker* worker) {
    free(worker);
 }
 
+/**
+ * Starts the NFC playlist worker thread
+ * @param worker Pointer to NfcPlaylistWorker instance to start
+ */
 void nfc_playlist_worker_start(NfcPlaylistWorker* worker) {
    furi_assert(worker);
    furi_thread_start(worker->thread);
    worker->state = NfcPlaylistWorkerState_Emulating;
 }
 
+/**
+ * Stops the NFC playlist worker and waits for thread completion
+ * @param worker Pointer to NfcPlaylistWorker instance to stop
+ */
 void nfc_playlist_worker_stop(NfcPlaylistWorker* worker) {
    furi_assert(worker);
    worker->state = NfcPlaylistWorkerState_Stopped;

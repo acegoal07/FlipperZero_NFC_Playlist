@@ -3,29 +3,29 @@
 #include <furi_hal.h>
 
 #include <gui/gui.h>
-#include <gui/view_dispatcher.h>
 #include <gui/scene_manager.h>
-#include <gui/modules/popup.h>
-#include <gui/modules/variable_item_list.h>
-#include <gui/modules/submenu.h>
+#include <gui/view_dispatcher.h>
 #include <gui/modules/file_browser.h>
+#include <gui/modules/popup.h>
+#include <gui/modules/submenu.h>
 #include <gui/modules/text_input.h>
+#include <gui/modules/variable_item_list.h>
 #include <gui/modules/widget.h>
 
-#include <storage/storage.h>
-
 #include <notification/notification_messages.h>
-
-#include <toolbox/stream/stream.h>
-#include <toolbox/stream/file_stream.h>
+#include <storage/storage.h>
 #include <toolbox/path.h>
+#include <toolbox/stream/file_stream.h>
+#include <toolbox/stream/stream.h>
 
 #include "nfc_playlist_icons.h"
-
 #include "scenes/nfc_playlist_scene.h"
-
-#include "lib/playlist_worker/nfc_playlist_worker.h"
 #include "lib/led_worker/nfc_playlist_led_worker.h"
+#include "lib/playlist_worker/nfc_playlist_worker.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define PLAYLIST_LOCATION     "/ext/apps_data/nfc_playlist/"
 #define PLAYLIST_DIR          "/ext/apps_data/nfc_playlist"
@@ -72,3 +72,7 @@ typedef struct {
    NfcPlaylistView views;
    NfcPlaylistWorkerInfo worker_info;
 } NfcPlaylist;
+
+#ifdef __cplusplus
+}
+#endif

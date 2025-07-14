@@ -1,13 +1,14 @@
 #pragma once
 #include <furi.h>
 #include <furi_hal.h>
+
 #include <nfc/nfc.h>
 #include <nfc/nfc_device.h>
 #include <nfc/nfc_listener.h>
 
-#include <toolbox/stream/stream.h>
-#include <toolbox/stream/file_stream.h>
 #include <toolbox/path.h>
+#include <toolbox/stream/file_stream.h>
+#include <toolbox/stream/stream.h>
 
 #ifdef __cplusplus
 extern "C" {

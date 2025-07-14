@@ -28,7 +28,7 @@ bool nfc_playlist_emulation_scene_on_event(void* context, SceneManagerEvent even
       case NfcPlaylistWorkerState_Emulating: {
          if(nfc_playlist->worker_info.settings->emulate_led_indicator) {
             nfc_playlist_led_worker_start(
-               nfc_playlist->notification_app, NfcPlaylistLedState_Normal);
+               nfc_playlist->notification_app, NfcPlaylistLedState_Emulating);
          }
          if(!header_str_static) header_str_static = furi_string_alloc();
          if(!text_str_static) text_str_static = furi_string_alloc();
@@ -60,7 +60,7 @@ bool nfc_playlist_emulation_scene_on_event(void* context, SceneManagerEvent even
       case NfcPlaylistWorkerState_Delaying: {
          if(nfc_playlist->worker_info.settings->emulate_led_indicator) {
             nfc_playlist_led_worker_start(
-               nfc_playlist->notification_app, NfcPlaylistLedState_Normal);
+               nfc_playlist->notification_app, NfcPlaylistLedState_Delaying);
          }
          if(!text_str_static) text_str_static = furi_string_alloc();
          popup_set_header(nfc_playlist->views.popup, "Delaying", 64, 5, AlignCenter, AlignTop);
