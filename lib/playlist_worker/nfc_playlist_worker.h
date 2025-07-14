@@ -1,13 +1,18 @@
 #pragma once
 #include <furi.h>
 #include <furi_hal.h>
+
 #include <nfc/nfc.h>
 #include <nfc/nfc_device.h>
 #include <nfc/nfc_listener.h>
 
-#include <toolbox/stream/stream.h>
-#include <toolbox/stream/file_stream.h>
 #include <toolbox/path.h>
+#include <toolbox/stream/file_stream.h>
+#include <toolbox/stream/stream.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 static const int options_emulate_timeout[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 static const int default_emulate_timeout = 4;
@@ -15,6 +20,7 @@ static const int options_emulate_delay[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11
 static const int default_emulate_delay = 0;
 static const bool default_emulate_led_indicator = true;
 static const bool default_skip_error = false;
+static const bool default_loop = false;
 
 typedef enum {
    NfcPlaylistWorkerState_Ready,
@@ -34,6 +40,7 @@ typedef struct {
    uint8_t emulate_delay;
    bool emulate_led_indicator;
    bool skip_error;
+   bool loop;
 } NfcPlaylistWorkerSettings;
 
 typedef struct {
@@ -52,3 +59,7 @@ NfcPlaylistWorker* nfc_playlist_worker_alloc(NfcPlaylistWorkerSettings* settings
 void nfc_playlist_worker_free(NfcPlaylistWorker* worker);
 void nfc_playlist_worker_stop(NfcPlaylistWorker* worker);
 void nfc_playlist_worker_start(NfcPlaylistWorker* worker);
+
+#ifdef __cplusplus
+}
+#endif

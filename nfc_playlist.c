@@ -48,6 +48,7 @@ static NfcPlaylist* nfc_playlist_alloc() {
    nfc_playlist->worker_info.settings->emulate_delay = default_emulate_delay;
    nfc_playlist->worker_info.settings->emulate_led_indicator = default_emulate_led_indicator;
    nfc_playlist->worker_info.settings->skip_error = default_skip_error;
+   nfc_playlist->worker_info.settings->loop = default_loop;
 
    view_dispatcher_set_event_callback_context(nfc_playlist->view_dispatcher, nfc_playlist);
    view_dispatcher_set_custom_event_callback(
