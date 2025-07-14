@@ -5,7 +5,8 @@ static void nfc_playlist_playlist_rename_menu_callback(void* context) {
    NfcPlaylist* nfc_playlist = context;
 
    FuriString* old_file_path = furi_string_alloc();
-   path_extract_dirname(furi_string_get_cstr(nfc_playlist->worker_info.settings->playlist_path), old_file_path);
+   path_extract_dirname(
+      furi_string_get_cstr(nfc_playlist->worker_info.settings->playlist_path), old_file_path);
    FuriString* new_file_path = furi_string_alloc_set(old_file_path);
    path_concat(
       furi_string_get_cstr(old_file_path), nfc_playlist->views.text_input.output, new_file_path);
@@ -62,8 +63,7 @@ bool nfc_playlist_playlist_rename_scene_on_event(void* context, SceneManagerEven
    NfcPlaylist* nfc_playlist = context;
 
    if(event.type == SceneManagerEventTypeCustom) {
-      bool playlist_exist_already = event.event;
-      if(playlist_exist_already) {
+      if(event.event) {
          scene_manager_next_scene(
             nfc_playlist->scene_manager, NfcPlaylistScene_ErrorPlaylistAlreadyExists);
       } else {
