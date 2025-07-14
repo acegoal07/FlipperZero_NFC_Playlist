@@ -108,6 +108,12 @@ static int32_t nfc_playlist_worker_task(void* context) {
             nfc_listener_stop(worker->nfc_listener);
             nfc_listener_free(worker->nfc_listener);
 
+            // If loop is enabled, rewind the stream to the beginning, reset position and perform delay
+            if(worker->settings->loop && playlist_position >= worker->settings->playlist_length) {
+               stream_rewind(stream);
+               playlist_position = 0;
+            }
+
             worker->ms_counter = (options_emulate_delay[worker->settings->emulate_delay] * 1000);
             if(worker->settings->emulate_delay &&
                playlist_position < worker->settings->playlist_length && worker->ms_counter > 0 &&
