@@ -9,6 +9,10 @@
 #include <toolbox/stream/file_stream.h>
 #include <toolbox/path.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 static const int options_emulate_timeout[] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
 static const int default_emulate_timeout = 4;
 static const int options_emulate_delay[] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12};
@@ -54,3 +58,7 @@ NfcPlaylistWorker* nfc_playlist_worker_alloc(NfcPlaylistWorkerSettings* settings
 void nfc_playlist_worker_free(NfcPlaylistWorker* worker);
 void nfc_playlist_worker_stop(NfcPlaylistWorker* worker);
 void nfc_playlist_worker_start(NfcPlaylistWorker* worker);
+
+#ifdef __cplusplus
+}
+#endif
