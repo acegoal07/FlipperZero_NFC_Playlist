@@ -115,7 +115,8 @@ bool nfc_playlist_nfc_remove_scene_on_event(void* context, SceneManagerEvent eve
          } else {
             VariableItem* Line_selector = variable_item_list_get(
                nfc_playlist->views.variable_item_list, NfcPlaylistNfcRemove_LineSelector);
-            variable_item_set_values_count(Line_selector, nfc_playlist->worker_info.settings->playlist_length);
+            variable_item_set_values_count(
+               Line_selector, nfc_playlist->worker_info.settings->playlist_length);
             variable_item_set_current_value_index(Line_selector, selected_line - 1);
 
             FuriString* tmp_str = furi_string_alloc_printf("%d", selected_line);

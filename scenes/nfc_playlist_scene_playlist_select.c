@@ -3,7 +3,8 @@
 static void nfc_playlist_playlist_select_menu_callback(void* context) {
    furi_assert(context);
    NfcPlaylist* nfc_playlist = context;
-   furi_string_swap(nfc_playlist->worker_info.settings->playlist_path, nfc_playlist->views.file_browser.output);
+   furi_string_swap(
+      nfc_playlist->worker_info.settings->playlist_path, nfc_playlist->views.file_browser.output);
    furi_string_reset(nfc_playlist->views.file_browser.output);
 
    Storage* storage = furi_record_open(RECORD_STORAGE);

@@ -82,6 +82,7 @@ static NfcPlaylist* nfc_playlist_alloc() {
       nfc_playlist->view_dispatcher,
       NfcPlaylistView_TextInput,
       text_input_get_view(nfc_playlist->views.text_input.view));
+
    return nfc_playlist;
 }
 

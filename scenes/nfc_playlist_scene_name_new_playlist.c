@@ -49,8 +49,7 @@ bool nfc_playlist_name_new_playlist_scene_on_event(void* context, SceneManagerEv
    NfcPlaylist* nfc_playlist = context;
 
    if(event.type == SceneManagerEventTypeCustom) {
-      bool playlist_exist_already = event.event;
-      if(playlist_exist_already) {
+      if(event.event) {
          scene_manager_next_scene(
             nfc_playlist->scene_manager, NfcPlaylistScene_ErrorPlaylistAlreadyExists);
       } else {

@@ -1,6 +1,7 @@
 #include "../nfc_playlist.h"
 
-static void nfc_playlist_confirm_delete_menu_callback(GuiButtonType result, InputType type, void* context) {
+static void
+   nfc_playlist_confirm_delete_menu_callback(GuiButtonType result, InputType type, void* context) {
    furi_assert(context);
    NfcPlaylist* nfc_playlist = context;
    if(type == InputTypeShort) {
