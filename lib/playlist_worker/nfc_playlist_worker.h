@@ -26,6 +26,8 @@ typedef enum {
    NfcPlaylistWorkerState_Ready,
    NfcPlaylistWorkerState_Emulating,
    NfcPlaylistWorkerState_Delaying,
+   NfcPlaylistWorkerState_Skipping,
+   NfcPlaylistWorkerState_Rewinding,
    NfcPlaylistWorkerState_InvalidFileType,
    NfcPlaylistWorkerState_FileDoesNotExist,
    NfcPlaylistWorkerState_FailedToLoadPlaylist,
@@ -59,6 +61,7 @@ NfcPlaylistWorker* nfc_playlist_worker_alloc(NfcPlaylistWorkerSettings* settings
 void nfc_playlist_worker_free(NfcPlaylistWorker* worker);
 void nfc_playlist_worker_stop(NfcPlaylistWorker* worker);
 void nfc_playlist_worker_start(NfcPlaylistWorker* worker);
+void nfc_playlist_worker_skip_to_next(NfcPlaylistWorker* worker);
 
 #ifdef __cplusplus
 }

@@ -11,6 +11,7 @@
 #include <gui/modules/text_input.h>
 #include <gui/modules/variable_item_list.h>
 #include <gui/modules/widget.h>
+#include <gui/modules/dialog_ex.h>
 
 #include <notification/notification_messages.h>
 #include <storage/storage.h>
@@ -38,7 +39,8 @@ typedef enum {
    NfcPlaylistView_Widget,
    NfcPlaylistView_FileBrowser,
    NfcPlaylistView_VariableItemList,
-   NfcPlaylistView_TextInput
+   NfcPlaylistView_TextInput,
+   NfcPlaylistView_Dialog
 } NfcPlaylistViews;
 
 typedef struct {
@@ -58,6 +60,7 @@ typedef struct {
    NfcPlaylistFileBrowserView file_browser;
    NfcPlaylistTextInputView text_input;
    VariableItemList* variable_item_list;
+   DialogEx* dialog;
 } NfcPlaylistView;
 
 typedef struct {
