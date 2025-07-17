@@ -8,11 +8,10 @@
 static void nfc_playlist_worker_delay(NfcPlaylistWorker* worker, int playlist_position) {
    worker->ms_counter = (options_emulate_delay[worker->settings->emulate_delay] * 1000);
    if(playlist_position < worker->settings->playlist_length && worker->ms_counter > 0 &&
-      worker->state != NfcPlaylistWorkerState_Stopped) {
+      worker->state != NfcPlaylistWorkerState_Stopped &&
+      worker->state != NfcPlaylistWorkerState_Skipping) {
       worker->state = NfcPlaylistWorkerState_Delaying;
-      while(worker->ms_counter > 0 && worker->state == NfcPlaylistWorkerState_Delaying &&
-            worker->state != NfcPlaylistWorkerState_Stopped &&
-            worker->state != NfcPlaylistWorkerState_Skipping) {
+      while(worker->ms_counter > 0 && worker->state == NfcPlaylistWorkerState_Delaying) {
          furi_delay_ms(10);
          worker->ms_counter -= 10;
       }
@@ -29,9 +28,7 @@ static void
    nfc_playlist_worker_countdown(NfcPlaylistWorker* worker, NfcPlaylistWorkerState state) {
    worker->state = state;
    worker->ms_counter = (options_emulate_timeout[worker->settings->emulate_timeout] * 1000);
-   while(worker->ms_counter > 0 && worker->state == state &&
-         worker->state != NfcPlaylistWorkerState_Stopped &&
-         worker->state != NfcPlaylistWorkerState_Skipping) {
+   while(worker->ms_counter > 0 && worker->state == state) {
       furi_delay_ms(10);
       worker->ms_counter -= 10;
    }
@@ -134,10 +131,6 @@ static int32_t nfc_playlist_worker_task(void* context) {
                   playlist_position = current_pos;
                   continue;
                }
-            }
-
-            if(worker->state == NfcPlaylistWorkerState_Skipping) {
-               continue;
             }
 
             // If loop is enabled, rewind the stream to the beginning, reset position and perform delay
