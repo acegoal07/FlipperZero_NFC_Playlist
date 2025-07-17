@@ -108,6 +108,7 @@ static int32_t nfc_playlist_worker_task(void* context) {
             nfc_listener_stop(worker->nfc_listener);
             nfc_listener_free(worker->nfc_listener);
 
+            // If rewinding is requested, handle it
             if(worker->state == NfcPlaylistWorkerState_Rewinding) {
                if(playlist_position == 1) {
                   stream_rewind(stream);
