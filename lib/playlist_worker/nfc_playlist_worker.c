@@ -95,8 +95,18 @@ static int32_t nfc_playlist_worker_task(void* context) {
          FSOM_OPEN_EXISTING)) {
       FuriString* line = furi_string_alloc();
 
-   loop_start:
-      while(stream_read_line(stream, line) && worker->state != NfcPlaylistWorkerState_Stopped) {
+      while(worker->state != NfcPlaylistWorkerState_Stopped) {
+         if(!stream_read_line(stream, line)) {
+            if(worker->settings->loop) {
+               stream_rewind(stream);
+               playlist_position = 0;
+               nfc_playlist_worker_delay(worker, playlist_position);
+               continue;
+            } else {
+               break;
+            }
+         }
+
          furi_string_trim(line);
          if(furi_string_empty(line)) {
             continue;
@@ -168,12 +178,6 @@ static int32_t nfc_playlist_worker_task(void* context) {
             }
             nfc_playlist_worker_delay(worker, playlist_position);
          }
-      }
-
-      if(worker->settings->loop && playlist_position >= worker->settings->playlist_length) {
-         stream_rewind(stream);
-         playlist_position = 0;
-         goto loop_start;
       }
 
       file_stream_close(stream);
