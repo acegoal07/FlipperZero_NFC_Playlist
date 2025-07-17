@@ -111,7 +111,34 @@ static int32_t nfc_playlist_worker_task(void* context) {
             nfc_listener_stop(worker->nfc_listener);
             nfc_listener_free(worker->nfc_listener);
 
-            if(worker->state == NfcPlaylistWorkerState_Skipping) continue;
+            if(worker->state == NfcPlaylistWorkerState_Rewinding) {
+               if(playlist_position == 1) {
+                  stream_rewind(stream);
+                  playlist_position = 0;
+                  continue;
+               } else {
+                  stream_rewind(stream);
+                  int current_pos = 0;
+
+                  FuriString* temp_line = furi_string_alloc();
+                  while(current_pos != (playlist_position - 2) &&
+                        stream_read_line(stream, temp_line) &&
+                        worker->state != NfcPlaylistWorkerState_Stopped) {
+                     furi_string_trim(temp_line);
+                     if(!furi_string_empty(temp_line)) {
+                        current_pos++;
+                     }
+                  }
+                  furi_string_free(temp_line);
+
+                  playlist_position = current_pos;
+                  continue;
+               }
+            }
+
+            if(worker->state == NfcPlaylistWorkerState_Skipping) {
+               continue;
+            }
 
             // If loop is enabled, rewind the stream to the beginning, reset position and perform delay
             if(worker->settings->loop && playlist_position >= worker->settings->playlist_length) {

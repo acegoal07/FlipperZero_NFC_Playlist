@@ -6,7 +6,6 @@
 #include <gui/scene_manager.h>
 #include <gui/view_dispatcher.h>
 #include <gui/modules/file_browser.h>
-#include <gui/modules/popup.h>
 #include <gui/modules/submenu.h>
 #include <gui/modules/text_input.h>
 #include <gui/modules/variable_item_list.h>
@@ -35,7 +34,6 @@ extern "C" {
 
 typedef enum {
    NfcPlaylistView_Submenu,
-   NfcPlaylistView_Popup,
    NfcPlaylistView_Widget,
    NfcPlaylistView_FileBrowser,
    NfcPlaylistView_VariableItemList,
@@ -55,7 +53,6 @@ typedef struct {
 
 typedef struct {
    Submenu* submenu;
-   Popup* popup;
    Widget* widget;
    NfcPlaylistFileBrowserView file_browser;
    NfcPlaylistTextInputView text_input;
