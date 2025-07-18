@@ -43,16 +43,13 @@ bool nfc_playlist_emulation_scene_on_event(void* context, SceneManagerEvent even
       nfc_playlist_worker_stop(nfc_playlist->worker_info.worker);
       consumed = true;
    } else if(event.type == SceneManagerEventTypeCustom) {
-      // Handle button presses
       switch(event.event) {
       case GuiButtonTypeLeft:
-         // Add your left button functionality
          nfc_playlist_worker_rewind(nfc_playlist->worker_info.worker);
          FURI_LOG_I("NFC Playlist", "Left button pressed");
          consumed = true;
          break;
       case GuiButtonTypeRight:
-         // Add your right button functionality
          nfc_playlist_worker_skip(nfc_playlist->worker_info.worker);
          FURI_LOG_I("NFC Playlist", "Right button pressed");
          consumed = true;
