@@ -8,10 +8,11 @@
 static void nfc_playlist_worker_delay(NfcPlaylistWorker* worker, int playlist_position) {
    worker->ms_counter = (options_emulate_delay[worker->settings->emulate_delay] * 1000);
    if(playlist_position < worker->settings->playlist_length && worker->ms_counter > 0 &&
-      worker->state != NfcPlaylistWorkerState_Stopped) {
+      worker->state != NfcPlaylistWorkerState_Stopped &&
+      worker->state != NfcPlaylistWorkerState_Skipping &&
+      worker->state != NfcPlaylistWorkerState_Rewinding) {
       worker->state = NfcPlaylistWorkerState_Delaying;
-      while(worker->ms_counter > 0 && worker->state == NfcPlaylistWorkerState_Delaying &&
-            worker->state != NfcPlaylistWorkerState_Stopped) {
+      while(worker->ms_counter > 0 && worker->state == NfcPlaylistWorkerState_Delaying) {
          furi_delay_ms(10);
          worker->ms_counter -= 10;
       }
@@ -28,8 +29,7 @@ static void
    nfc_playlist_worker_countdown(NfcPlaylistWorker* worker, NfcPlaylistWorkerState state) {
    worker->state = state;
    worker->ms_counter = (options_emulate_timeout[worker->settings->emulate_timeout] * 1000);
-   while(worker->ms_counter > 0 && worker->state == state &&
-         worker->state != NfcPlaylistWorkerState_Stopped) {
+   while(worker->ms_counter > 0 && worker->state == state) {
       furi_delay_ms(10);
       worker->ms_counter -= 10;
    }
@@ -57,7 +57,43 @@ static int32_t nfc_playlist_worker_task(void* context) {
          FSOM_OPEN_EXISTING)) {
       FuriString* line = furi_string_alloc();
 
-      while(stream_read_line(stream, line) && worker->state != NfcPlaylistWorkerState_Stopped) {
+      while(worker->state != NfcPlaylistWorkerState_Stopped) {
+         // Handle rewinding
+         if(worker->state == NfcPlaylistWorkerState_Rewinding) {
+            if(playlist_position == 1) {
+               stream_rewind(stream);
+               playlist_position = 0;
+            } else {
+               stream_rewind(stream);
+               int current_pos = 0;
+               int target_pos = playlist_position - 2;
+
+               FuriString* temp_line = furi_string_alloc();
+               while(current_pos < target_pos && stream_read_line(stream, temp_line) &&
+                     worker->state != NfcPlaylistWorkerState_Stopped) {
+                  furi_string_trim(temp_line);
+                  if(!furi_string_empty(temp_line)) {
+                     current_pos++;
+                  }
+               }
+               furi_string_free(temp_line);
+
+               playlist_position = current_pos;
+            }
+         }
+
+         // Handle loop setting
+         if(!stream_read_line(stream, line)) {
+            if(worker->settings->loop) {
+               stream_rewind(stream);
+               playlist_position = 0;
+               nfc_playlist_worker_delay(worker, playlist_position);
+               continue;
+            } else {
+               break;
+            }
+         }
+
          furi_string_trim(line);
          if(furi_string_empty(line)) {
             continue;
@@ -106,12 +142,6 @@ static int32_t nfc_playlist_worker_task(void* context) {
 
             nfc_listener_stop(worker->nfc_listener);
             nfc_listener_free(worker->nfc_listener);
-
-            // If loop is enabled, rewind the stream to the beginning, reset position and perform delay
-            if(worker->settings->loop && playlist_position >= worker->settings->playlist_length) {
-               stream_rewind(stream);
-               playlist_position = 0;
-            }
 
             nfc_playlist_worker_delay(worker, playlist_position);
          } else {
@@ -172,6 +202,7 @@ void nfc_playlist_worker_free(NfcPlaylistWorker* worker) {
    if(worker->nfc_device) {
       nfc_device_free(worker->nfc_device);
    }
+
    if(worker->nfc) {
       nfc_free(worker->nfc);
    }
@@ -200,4 +231,28 @@ void nfc_playlist_worker_stop(NfcPlaylistWorker* worker) {
    furi_assert(worker);
    worker->state = NfcPlaylistWorkerState_Stopped;
    furi_thread_join(worker->thread);
+}
+
+/**
+ * Skips to the next NFC card in the playlist
+ * @param worker Pointer to NfcPlaylistWorker instance to skip
+ */
+void nfc_playlist_worker_skip(NfcPlaylistWorker* worker) {
+   furi_assert(worker);
+   if(worker->state != NfcPlaylistWorkerState_Stopped ||
+      worker->state != NfcPlaylistWorkerState_Ready) {
+      worker->state = NfcPlaylistWorkerState_Skipping;
+   }
+}
+
+/**
+ * Rewinds the NFC playlist worker to the previous NFC card
+ * @param worker Pointer to NfcPlaylistWorker instance to rewind
+ */
+void nfc_playlist_worker_rewind(NfcPlaylistWorker* worker) {
+   furi_assert(worker);
+   if(worker->state != NfcPlaylistWorkerState_Stopped ||
+      worker->state != NfcPlaylistWorkerState_Ready) {
+      worker->state = NfcPlaylistWorkerState_Rewinding;
+   }
 }

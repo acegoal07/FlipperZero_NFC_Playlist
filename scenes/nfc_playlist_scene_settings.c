@@ -6,6 +6,7 @@ typedef enum {
    NfcPlaylistSettings_LedIndicator,
    NfcPlaylistSettings_SkipError,
    NfcPlaylistSettings_Loop,
+   NfcPlaylistSettings_UserControls,
    NfcPlaylistSettings_Reset
 } NfcPlaylistSettingsMenuSelection;
 
@@ -54,6 +55,11 @@ static void nfc_playlist_settings_options_change_callback(VariableItem* item) {
       nfc_playlist->worker_info.settings->loop = option_value_index;
       variable_item_set_current_value_text(
          item, nfc_playlist->worker_info.settings->loop ? "ON" : "OFF");
+      break;
+   case NfcPlaylistSettings_UserControls:
+      nfc_playlist->worker_info.settings->user_controls = option_value_index;
+      variable_item_set_current_value_text(
+         item, nfc_playlist->worker_info.settings->user_controls ? "ON" : "OFF");
       break;
    default:
       break;
@@ -126,6 +132,17 @@ void nfc_playlist_settings_scene_on_enter(void* context) {
    variable_item_set_current_value_index(loop_setting, nfc_playlist->worker_info.settings->loop);
    variable_item_set_current_value_text(
       loop_setting, nfc_playlist->worker_info.settings->loop ? "ON" : "OFF");
+
+   VariableItem* user_controls_setting = variable_item_list_add(
+      nfc_playlist->views.variable_item_list,
+      "User Controls",
+      2,
+      nfc_playlist_settings_options_change_callback,
+      nfc_playlist);
+   variable_item_set_current_value_index(
+      user_controls_setting, nfc_playlist->worker_info.settings->user_controls);
+   variable_item_set_current_value_text(
+      user_controls_setting, nfc_playlist->worker_info.settings->user_controls ? "ON" : "OFF");
 
    variable_item_list_add(nfc_playlist->views.variable_item_list, "Reset settings", 0, NULL, NULL);
 
@@ -200,6 +217,15 @@ bool nfc_playlist_settings_scene_on_event(void* context, SceneManagerEvent event
             loop_setting, nfc_playlist->worker_info.settings->loop);
          variable_item_set_current_value_text(
             loop_setting, nfc_playlist->worker_info.settings->loop ? "ON" : "OFF");
+
+         nfc_playlist->worker_info.settings->user_controls = default_user_controls;
+         VariableItem* user_controls_setting = variable_item_list_get(
+            nfc_playlist->views.variable_item_list, NfcPlaylistSettings_UserControls);
+         variable_item_set_current_value_index(
+            user_controls_setting, nfc_playlist->worker_info.settings->user_controls);
+         variable_item_set_current_value_text(
+            user_controls_setting,
+            nfc_playlist->worker_info.settings->user_controls ? "ON" : "OFF");
 
          consumed = true;
          break;
